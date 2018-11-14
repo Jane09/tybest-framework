@@ -11,11 +11,100 @@
 
     <modules>
         <module>framework-uid</module>
+        <module>framework-thrift</module>
+        <module>framework-crawler</module>
     </modules>
 
     <properties>
         <java.version>1.8</java.version>
+        <project.build.revision>1.0.0-SNAPSHOT</project.build.revision>
+        <project.build.jdk.version>1.8</project.build.jdk.version>
+        <lombok.version>1.18.4</lombok.version>
+        <swagger.version>2.9.2</swagger.version>
+        <lmax-disruptor.version>3.4.2</lmax-disruptor.version>
+        <mysql-jdbc.version>5.1.47</mysql-jdbc.version>
+        <guava.version>27.0-jre</guava.version>
+        <mapper.version>4.0.4</mapper.version>
+        <mapper.boot.version>2.0.4</mapper.boot.version>
+        <pagehelper.boot.version>1.2.9</pagehelper.boot.version>
+        <mybatis.boot.version>1.3.2</mybatis.boot.version>
+        <druid.boot.version>1.1.10</druid.boot.version>
+        <mybatis.generator.version>1.3.7</mybatis.generator.version>
+        <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
+        <curator.version>4.0.1</curator.version>
+        <fastjson.version>1.2.51</fastjson.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.11.3</version>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.8.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>1.23</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-exec</artifactId>
+                <version>1.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.thrift</groupId>
+                <artifactId>libthrift</artifactId>
+                <version>0.11.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!--<plugin>
+                    <groupId>org.mybatis.generator</groupId>
+                    <artifactId>mybatis-generator-maven-plugin</artifactId>
+                    <version>${mybatis.generator.version}</version>
+                </plugin>-->
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
