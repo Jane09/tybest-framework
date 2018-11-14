@@ -3,3 +3,22 @@ spring:
     name: framework-uid
 server:
   port: 8888
+leaf:
+  thrift:
+    server:
+      port: 6666
+      minWorkerThreads: 10
+      maxWorkerThreads: 100
+  zookeeper:
+    port: 2181
+    servers:
+      - "localhost"
+    root: "leaf-server"
+    forever: "leaf-server-forever"
+    emphemeral: "leaf-server-emphemeral"
+    sessionTimeoutMs: 20000
+    connectionTimeoutMs: 15000
+    retryTimes: 20
+    retryIntervalMs: 1000
+    retryIntervalceilingMs: 30000
+    heartbeatIntervalMs: 3000

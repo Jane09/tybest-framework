@@ -1,5 +1,5 @@
 # tybest-framework
 Base Framework tools
 
-## thirft
+## thrift
     thirft -gen java xxx.thrift

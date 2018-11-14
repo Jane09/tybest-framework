@@ -10,10 +10,14 @@ import org.springframework.context.annotation.Configuration;
  * @date 2018/11/14 11:58
  */
 @Configuration
-@ConfigurationProperties(prefix = "leaf.rpc")
+@ConfigurationProperties(prefix = "leaf.thrift.server")
 @Getter
 @Setter
-public class RpcConfig {
+public class RpcServerConfig {
 
+    private int port;
 
+    private int minWorkerThreads;
+
+    private int maxWorkerThreads;
 }
