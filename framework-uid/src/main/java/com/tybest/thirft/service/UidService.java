@@ -1,7 +1,6 @@
 package com.tybest.thirft.service;
 
 import com.tybest.thirft.rpc.RpcUidService;
-import org.apache.thrift.TException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,12 +12,12 @@ public class UidService implements RpcUidService.Iface {
 
 
     @Override
-    public long getTimestampe(long myTimestamp) throws TException {
+    public long getTimestamp(long myTimestamp) {
         return System.currentTimeMillis();
     }
 
     @Override
-    public String getUid(String param) throws TException {
+    public String getUid(String param) {
         //TODO genterate snowflake uuid
         return null;
     }
