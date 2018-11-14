@@ -73,7 +73,7 @@ public class ZkConnectionManager {
         List<String> servers = zookeeperConfig.getServers();
         List<String> conns = new ArrayList<>();
         servers.forEach(s -> conns.add(s+":"+zookeeperConfig.getPort()));
-        return StringUtils.join(conns,",")+zookeeperConfig.getRoot();
+        return StringUtils.join(conns,",");
     }
 
 
