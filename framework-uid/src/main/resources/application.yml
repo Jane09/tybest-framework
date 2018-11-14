@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: framework-uid
+server:
+  port: 8888
