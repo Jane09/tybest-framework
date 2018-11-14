@@ -15,7 +15,7 @@ leaf:
       - "localhost"
     root: "leaf-server"
     forever: "leaf-server-forever"
-    emphemeral: "leaf-server-emphemeral"
+    ephemeral: "leaf-server-ephemeral"
     sessionTimeoutMs: 20000
     connectionTimeoutMs: 15000
     retryTimes: 20
