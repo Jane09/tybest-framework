@@ -7,5 +7,6 @@ package com.tybest.thirft.zookeeper.cluster;
  */
 public interface ClusterStat {
 
+    void close();
 
 }

@@ -50,7 +50,7 @@ public class DistributedClusterStat implements ClusterStat {
         }
     }
 
-
+    @Override
     public void close() {
         if(null != this.zk) {
             this.zk.close();
