@@ -12,6 +12,6 @@ import org.apache.zookeeper.data.Stat;
 public class DefaultWatcherCallback implements WatcherCallback {
     @Override
     public void execute(Stat stat, CuratorEventType type, String path) {
-        //TODO
+        log.info(path);
     }
 }

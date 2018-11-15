@@ -13,9 +13,9 @@ leaf:
     port: 2181
     servers:
       - "localhost"
-    root: "leaf-server"
-    forever: "leaf-server-forever"
-    ephemeral: "leaf-server-ephemeral"
+    root: "/leaf-server"
+    forever: "/leaf-server-forever"
+    ephemeral: "/leaf-server-ephemeral"
     sessionTimeoutMs: 20000
     connectionTimeoutMs: 15000
     retryTimes: 20

@@ -47,11 +47,41 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- modules -->
+            <dependency>
+                <groupId>com.tybest</groupId>
+                <artifactId>framework-base</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tybest</groupId>
+                <artifactId>framework-crawler</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tybest</groupId>
+                <artifactId>framework-jdbc</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tybest</groupId>
+                <artifactId>framework-microservce</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tybest</groupId>
+                <artifactId>framework-uid</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <!-- crawler -->
             <dependency>
                 <groupId>org.jsoup</groupId>
                 <artifactId>jsoup</artifactId>
                 <version>1.11.3</version>
             </dependency>
+
+            <!-- db -->
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
