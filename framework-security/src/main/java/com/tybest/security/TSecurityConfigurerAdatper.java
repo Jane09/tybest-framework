@@ -39,12 +39,14 @@ public abstract class TSecurityConfigurerAdatper extends WebSecurityConfigurerAd
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
+        authenticateConfigurer.configureAuthenticationManagerBuilder(auth);
         additionalConfigure(auth);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-       additionalConfigure(http);
+        authenticateConfigurer.configureHttpSecurity(http);
+        additionalConfigure(http);
     }
 
 
