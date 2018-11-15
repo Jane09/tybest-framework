@@ -2,6 +2,7 @@ package com.tybest.base.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -21,5 +22,13 @@ public class DateUtils {
     public static Date parse(String date, String pattern) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat(pattern);
         return sdf.parse(date);
+    }
+
+
+    public static String format(long timestamp, String pattern) {
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(timestamp);
+        return sdf.format(c.getTime());
     }
 }

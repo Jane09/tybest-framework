@@ -28,4 +28,5 @@ public class ZookeeperConfig {
     private int retryIntervalMs;
     private int retryIntervalceilingMs;
     private int heartbeatIntervalMs;
+    private int averageTimestampThreshold;
 }

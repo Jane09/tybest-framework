@@ -22,3 +22,4 @@ leaf:
     retryIntervalMs: 1000
     retryIntervalceilingMs: 30000
     heartbeatIntervalMs: 3000
+    averageTimestampThreshold: 5000

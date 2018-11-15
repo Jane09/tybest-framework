@@ -3,9 +3,10 @@ package com.tybest.thirft.zookeeper.cluster;
 import com.tybest.thirft.config.ZookeeperConfig;
 import com.tybest.thirft.zookeeper.ZkConnectionManager;
 import com.tybest.thirft.zookeeper.callback.WatcherCallback;
+import com.tybest.thirft.zookeeper.utils.ProcessUtils;
+import lombok.Getter;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.api.CuratorEventType;
-import org.apache.zookeeper.data.Stat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,9 +22,12 @@ public class DistributedClusterStat implements ClusterStat {
     private final ZookeeperConfig zookeeperConfig;
 
     private AtomicBoolean active;
+    @Getter
     private CuratorFramework zk;
+
     private WatcherCallback watcherCallback;
 
+    @Autowired
     public DistributedClusterStat(ZkConnectionManager zkConnectionManager, ZookeeperConfig zookeeperConfig) {
         this.zkConnectionManager = zkConnectionManager;
         this.zookeeperConfig = zookeeperConfig;
@@ -38,12 +42,20 @@ public class DistributedClusterStat implements ClusterStat {
 
                 }
             };
+            this.zk = null;
+            this.zk = zkConnectionManager.newClient();
+            this.zkConnectionManager.addListener(this.zk,watcherCallback);
         }catch (Exception ex) {
-
+            ProcessUtils.exitDelay(-1, ex.getMessage());
         }
-
     }
 
 
-
+    public void close() {
+        if(null != this.zk) {
+            this.zk.close();
+            this.zk = null;
+        }
+        ProcessUtils.sleep(5000);
+    }
 }

@@ -51,7 +51,7 @@ public class ZkConnectionManager {
     }
 
 
-    private void addListener(CuratorFramework cf, WatcherCallback callback){
+    public void addListener(CuratorFramework cf, WatcherCallback callback){
         cf.getCuratorListenable().addListener((curatorFramework, event) -> {
             WatchedEvent we = event.getWatchedEvent();
             if(null != we) {
@@ -128,7 +128,7 @@ public class ZkConnectionManager {
         return null;
     }
 
-    private List<String> getChildren(CuratorFramework cf, String path, boolean watch) throws Exception {
+    public List<String> getChildren(CuratorFramework cf, String path, boolean watch) throws Exception {
         String npath = PathUtils.normalize(path);
         if(watch) {
             return cf.getChildren().watched().forPath(npath);
