@@ -22,9 +22,9 @@ public abstract class TSecurityConfigurerAdatper extends WebSecurityConfigurerAd
     /**
      * 通过登录名加载用户基础信息
      */
-    protected final TAccountService accountService;
-    protected final AuthenticationManager authenticationManager;
-    protected final TAuthenticateConfigurer authenticateConfigurer;
+    private final TAccountService accountService;
+    private final AuthenticationManager authenticationManager;
+    private final TAuthenticateConfigurer authenticateConfigurer;
 
     protected TSecurityConfigurerAdatper(TAccountService accountService, AuthenticationManager authenticationManager, TAuthenticateConfigurer authenticateConfigurer) {
         this.accountService = accountService;
@@ -55,6 +55,10 @@ public abstract class TSecurityConfigurerAdatper extends WebSecurityConfigurerAd
         return super.authenticationManagerBean();
     }
 
+    /**
+     * 定制化配置
+     * @return 配置元数据
+     */
     @Bean
     @ConfigurationProperties(prefix = SecurityConfig.CONFIG_PREFIX)
     public SecurityConfig getConfigBean() {

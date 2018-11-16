@@ -1,2 +1,9 @@
 tybest:
-  security:
+  t-security:
+    ignore-urls: /swagger-resources/**,/v2/*,/swagger*,/webjars/**,/anon/**,/task/**,/wx/tenant/**,/calls/resource/**,/customers/bind-mobile,/customers/**/bind-status,/*/wx/web/*,/agent/public/**,/calls/zhongmai/callback,/customer/blacklist/**
+    jwt-token:
+      sign-key: newtank
+      access-expires: 54000
+    encoder:
+      password-encoder: md5
+      password-salt: newtank
