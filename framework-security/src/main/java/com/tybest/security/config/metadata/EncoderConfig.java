@@ -17,6 +17,7 @@ public class EncoderConfig {
     public static final String PWD_ENCODER_SCRYPT = "scrypt";
     public static final String PWD_ENCODER_PBKDF2 = "pbkdf2";
     public static final String PWD_ENCODER_MD5 = "md5";
+    public static final String PWD_ENCODER_MD52 = "md52";
 
 
     private String passwordEncoder;
