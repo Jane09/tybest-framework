@@ -13,6 +13,7 @@ import java.util.Base64;
  */
 public class Md5AdvancePasswordEncoder implements PasswordEncoder {
 
+    private static final String ENCRPYT_PREFIX = "{md52}";
     public static void main(String[] args) {
         Md5AdvancePasswordEncoder encoder = new Md5AdvancePasswordEncoder("newtank");
         System.out.println(encoder.encode("111111"));
@@ -39,7 +40,7 @@ public class Md5AdvancePasswordEncoder implements PasswordEncoder {
         final int blen = byteArr.length;
         secretArr = Arrays.copyOf(byteArr, blen + len);
         System.arraycopy(key, 0, secretArr, blen, len);
-        return DigestUtils.md5DigestAsHex(secretArr);
+        return ENCRPYT_PREFIX+DigestUtils.md5DigestAsHex(secretArr);
     }
 
     @Override

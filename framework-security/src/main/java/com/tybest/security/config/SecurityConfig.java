@@ -23,6 +23,8 @@ public class SecurityConfig {
     public static final String CACHE_TYPE_REDIS = "redis";
 
 
+    private boolean supervisorGranted = true;
+
     private List<String> ignoreUrls = new ArrayList<>();
 
     private JwtTokenConfig jwtToken = new JwtTokenConfig();
