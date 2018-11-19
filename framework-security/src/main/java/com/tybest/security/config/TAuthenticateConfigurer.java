@@ -44,20 +44,15 @@ public class TAuthenticateConfigurer {
      * @throws Exception
      */
     public void configureHttpSecurity(HttpSecurity http) throws Exception {
-        http.cors()
-                .configurationSource(new TClientCorsConfigurationSource(securityConfig))
-                .and()
-                .csrf()
-                .disable()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .rememberMe()
-                .rememberMeServices(new TClientRememberMeService(this.tokenProcessor));
-
+        //跨域、csrf攻击、记住我
+        http.cors().configurationSource(new TClientCorsConfigurationSource(securityConfig))
+            .and().csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and().rememberMe().rememberMeServices(new TClientRememberMeService(this.tokenProcessor));
+        //anon配置
         if (securityConfig.getIgnoreUrls() != null) {
             http.authorizeRequests().antMatchers(securityConfig.getIgnoreUrls().toArray(new String[0])).permitAll();
         }
+        //拒绝访问设置
         http.authorizeRequests()
                 .anyRequest()
                 .authenticated()
@@ -72,7 +67,7 @@ public class TAuthenticateConfigurer {
         if (filters != null) {
             filters.forEach(tfilter -> {
                 switch (tfilter.getPosition()) {
-                    case AROUND:
+                    case AT:
                         http.addFilterAt(tfilter.getFilter(), tfilter.getReferencePositionClass());
                         break;
                     case BEFORE:
@@ -119,6 +114,6 @@ public class TAuthenticateConfigurer {
     }
 
     enum Position {
-        BEFORE,AFTER,AROUND
+        BEFORE,AFTER,AT
     }
 }
