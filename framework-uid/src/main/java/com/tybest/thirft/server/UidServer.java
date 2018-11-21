@@ -37,6 +37,7 @@ public class UidServer {
     }
 
     public void start() {
+        //
         try{
             zkConnectionManager.mkdirs(clusterStat.getZk(),zookeeperConfig.getForever());
             zkConnectionManager.mkdirs(clusterStat.getZk(),zookeeperConfig.getEphemeral());

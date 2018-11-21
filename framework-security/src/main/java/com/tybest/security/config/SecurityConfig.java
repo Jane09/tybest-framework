@@ -1,5 +1,7 @@
 package com.tybest.security.config;
 
+import com.tybest.security.config.metadata.CorsConfig;
+import com.tybest.security.config.metadata.DefaultCorsConfig;
 import com.tybest.security.config.metadata.EncoderConfig;
 import com.tybest.security.config.metadata.JwtTokenConfig;
 import lombok.Getter;
@@ -32,6 +34,6 @@ public class SecurityConfig {
 
     private EncoderConfig encoder = new EncoderConfig();
 
-
+    private CorsConfig cors = new DefaultCorsConfig();
 
 }
