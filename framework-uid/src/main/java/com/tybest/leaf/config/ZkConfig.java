@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class ZookeeperConfig {
+public class ZkConfig {
 
     private int port;
     private List<String> servers;

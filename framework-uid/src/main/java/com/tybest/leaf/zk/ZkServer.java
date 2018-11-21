@@ -1,6 +1,7 @@
 package com.tybest.leaf.zk;
 
 import com.tybest.leaf.config.LeafConfig;
+import com.tybest.leaf.rpc.LeafService;
 import com.tybest.leaf.zk.auth.AuthInfo;
 import com.tybest.leaf.zk.callback.DefaultWatcherCallback;
 import com.tybest.leaf.zk.callback.WatcherCallback;
@@ -28,6 +29,8 @@ import java.util.List;
 public class ZkServer {
 
     private final LeafConfig leafConfig;
+    private final LeafService leafService;
+    private volatile boolean started = false;
 
     private CuratorFramework conn;
 
@@ -48,13 +51,50 @@ public class ZkServer {
             conn = builder.build();
             addListener(conn,new DefaultWatcherCallback());
             conn.start();
+            started = true;
+            log.info("start up zk completely");
         }
     }
 
 
     public CuratorFramework getConn() {
+        if(!started){
+            start(null);
+        }
         return this.conn;
     }
+
+    /**
+     * 校验是否已注册
+     */
+    private void checkRegister(){
+
+    }
+
+    /**
+     * 获取所有节点
+     */
+    private void getEphemeralNodes() {
+
+    }
+
+
+    private void getWorkId(String ip, String port) {
+
+    }
+
+    /**
+     * 校验周期性上传的时间戳
+     */
+    private void checkCycleUploadTimestamp(){
+
+    }
+
+
+    private void checkAverageConstrint() {
+
+    }
+
 
 
     /**
@@ -64,6 +104,7 @@ public class ZkServer {
         if(this.conn != null){
             this.conn.close();
             this.conn = null;
+            log.info("close zk completely");
         }
     }
 

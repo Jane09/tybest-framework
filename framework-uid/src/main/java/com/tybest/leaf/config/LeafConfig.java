@@ -21,5 +21,5 @@ public class LeafConfig {
 
     private int maxWorkerThreads;
 
-    private ZookeeperConfig zk;
+    private ZkConfig zk;
 }
