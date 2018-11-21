@@ -40,19 +40,24 @@ public class ZkServer {
      */
     public void start(AuthInfo authInfo) {
         if(conn == null){
-            CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
-            builder.connectString(getConnectString())
-                    .connectionTimeoutMs(leafConfig.getZk().getConnectionTimeoutMs())
-                    .sessionTimeoutMs(leafConfig.getZk().getSessionTimeoutMs())
-                    .retryPolicy(new LeafBoundedExponentialBackoffRetry(leafConfig.getZk().getRetryIntervalMs(),leafConfig.getZk().getRetryIntervalceilingMs(),leafConfig.getZk().getRetryTimes()));
-            if(null != authInfo && !StringUtils.isEmpty(authInfo.getScheme()) && null != authInfo.getPayload()) {
-                builder = builder.authorization(authInfo.getScheme(),authInfo.getPayload());
+            try{
+                CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
+                builder.connectString(getConnString())
+                        .connectionTimeoutMs(leafConfig.getZk().getConnectionTimeoutMs())
+                        .sessionTimeoutMs(leafConfig.getZk().getSessionTimeoutMs())
+                        .retryPolicy(new LeafBoundedExponentialBackoffRetry(leafConfig.getZk().getRetryIntervalMs(),leafConfig.getZk().getRetryIntervalceilingMs(),leafConfig.getZk().getRetryTimes()));
+                if(null != authInfo && !StringUtils.isEmpty(authInfo.getScheme()) && null != authInfo.getPayload()) {
+                    builder = builder.authorization(authInfo.getScheme(),authInfo.getPayload());
+                }
+                conn = builder.build();
+                addListener(conn,new DefaultWatcherCallback());
+                conn.start();
+                started = true;
+                log.info("start up zk completely");
+            }catch (Exception ex){
+                //TODO retry strategy
             }
-            conn = builder.build();
-            addListener(conn,new DefaultWatcherCallback());
-            conn.start();
-            started = true;
-            log.info("start up zk completely");
+
         }
     }
 
@@ -127,7 +132,7 @@ public class ZkServer {
      *           ip:port,ip:port/root 添加一个根目录
      * @return  zk连接池
      */
-    private String getConnectString() {
+    private String getConnString() {
         List<String> servers = leafConfig.getZk().getServers();
         List<String> conns = new ArrayList<>();
         servers.forEach(s -> conns.add(s+":"+leafConfig.getPort()));
