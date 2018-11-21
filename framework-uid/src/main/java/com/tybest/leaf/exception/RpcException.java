@@ -1,10 +1,10 @@
-package com.tybest.thirft.exception;
+package com.tybest.leaf.exception;
 
 /**
  * @author tb
  * @date 2018/11/14 15:09
  */
-public class RpcException extends BaseException {
+public class RpcException extends LeafException {
 
     public RpcException(String message) {
         super(message);

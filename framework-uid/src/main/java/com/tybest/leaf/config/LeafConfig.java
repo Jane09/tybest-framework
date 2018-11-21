@@ -1,4 +1,4 @@
-package com.tybest.thirft.config;
+package com.tybest.leaf.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,17 +7,19 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @author tb
- * @date 2018/11/14 11:58
+ * @date 2018/11/21 16:32
  */
-@Configuration
-@ConfigurationProperties(prefix = "leaf.thrift.server")
 @Getter
 @Setter
-public class RpcServerConfig {
+@Configuration
+@ConfigurationProperties(prefix = "leaf")
+public class LeafConfig {
 
     private int port;
 
     private int minWorkerThreads;
 
     private int maxWorkerThreads;
+
+    private ZookeeperConfig zk;
 }

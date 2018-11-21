@@ -1,4 +1,4 @@
-package com.tybest.thirft.zookeeper;
+package com.tybest.leaf.zk.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.io.Serializable;
  */
 @AllArgsConstructor
 @Getter
-public class ZkAuthInfo implements Serializable {
+public class AuthInfo implements Serializable {
     public String scheme;
     public byte[] payload = null;
 }

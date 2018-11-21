@@ -1,18 +1,14 @@
-package com.tybest.thirft.config;
+package com.tybest.leaf.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
 /**
  * @author tb
- * @date 2018/11/14 12:07
+ * @date 2018/11/21 16:42
  */
-@Configuration
-@ConfigurationProperties(prefix = "leaf.zookeeper")
 @Getter
 @Setter
 public class ZookeeperConfig {
