@@ -23,6 +23,7 @@
         <module>framework-jdbc</module>
         <module>framework-microservce</module>
         <module>framework-security</module>
+        <module>framework-gateway</module>
     </modules>
 
     <properties>
