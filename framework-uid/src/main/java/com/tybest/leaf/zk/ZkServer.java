@@ -1,19 +1,23 @@
 package com.tybest.leaf.zk;
 
 import com.tybest.leaf.config.LeafConfig;
+import com.tybest.leaf.exception.ZkException;
 import com.tybest.leaf.rpc.LeafService;
 import com.tybest.leaf.zk.auth.AuthInfo;
 import com.tybest.leaf.zk.callback.DefaultWatcherCallback;
 import com.tybest.leaf.zk.callback.WatcherCallback;
+import com.tybest.leaf.zk.operator.DefaultOperator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +32,8 @@ import java.util.List;
 @Slf4j
 public class ZkServer {
 
+    private static final byte[] EMPTY_DATA = new byte[0];
+    private static final String FILE_SEPERATEOR = File.separator;
     private final LeafConfig leafConfig;
     private final LeafService leafService;
     private volatile boolean started = false;
@@ -54,19 +60,34 @@ public class ZkServer {
                 conn.start();
                 started = true;
                 log.info("start up zk completely");
+
+                prepare();
+
             }catch (Exception ex){
                 //TODO retry strategy
             }
-
         }
     }
-
-
     public CuratorFramework getConn() {
         if(!started){
             start(null);
         }
         return this.conn;
+    }
+
+    public void prepare(){
+        CuratorFramework conn = getConn();
+        if(conn != null){
+            ZkOperator operator = DefaultOperator.getInstance();
+            try {
+                operator.addNode(conn,this.leafConfig.getZk().getRoot(),EMPTY_DATA, CreateMode.PERSISTENT);
+                operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getPersistent(),EMPTY_DATA,CreateMode.PERSISTENT);
+                operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
+            } catch (Exception e) {
+                log.error("Create Root Path failed", e);
+                throw new ZkException(e);
+            }
+        }
     }
 
     /**
