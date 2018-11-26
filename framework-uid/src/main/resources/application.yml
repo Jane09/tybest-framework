@@ -4,6 +4,7 @@ spring:
 server:
   port: 8888
 leaf:
+  datacenter: 2
   port: 6666
   minWorkerThreads: 10
   maxWorkerThreads: 100
@@ -12,8 +13,8 @@ leaf:
     servers:
       - "localhost"
     root: "/leaf-server"
-    persistent: "/leaf-server-forever"
-    ephemeral: "/leaf-server-ephemeral"
+    persistent: "/leaf-persistent"
+    ephemeral: "/leaf-ephemeral"
     sessionTimeoutMs: 20000
     connectionTimeoutMs: 15000
     retryTimes: 20

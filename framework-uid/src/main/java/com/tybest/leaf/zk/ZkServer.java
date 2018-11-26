@@ -3,6 +3,8 @@ package com.tybest.leaf.zk;
 import com.tybest.leaf.config.LeafConfig;
 import com.tybest.leaf.exception.ZkException;
 import com.tybest.leaf.rpc.LeafService;
+import com.tybest.leaf.utils.NetUtils;
+import com.tybest.leaf.utils.SnowflakeUtils;
 import com.tybest.leaf.zk.auth.AuthInfo;
 import com.tybest.leaf.zk.callback.DefaultWatcherCallback;
 import com.tybest.leaf.zk.callback.WatcherCallback;
@@ -39,8 +41,18 @@ public class ZkServer {
     private volatile boolean started = false;
 
     private CuratorFramework conn;
+    private SnowflakeUtils snowflakeUtils;
 
     /**
+     * 使用的是内网IP
+     * leaf-persistent
+     *    ip:port -> workid
+     *    ...
+     *leaf-ephermal
+     *    ip:port -> timestamp
+     *    ...
+     *
+     *
      * 启动服务
      * @param authInfo
      */
@@ -77,17 +89,25 @@ public class ZkServer {
 
     public void prepare(){
         CuratorFramework conn = getConn();
-        if(conn != null){
-            ZkOperator operator = DefaultOperator.getInstance();
-            try {
-                operator.addNode(conn,this.leafConfig.getZk().getRoot(),EMPTY_DATA, CreateMode.PERSISTENT);
-                operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getPersistent(),EMPTY_DATA,CreateMode.PERSISTENT);
-                operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
-            } catch (Exception e) {
-                log.error("Create Root Path failed", e);
-                throw new ZkException(e);
-            }
+        ZkOperator operator = DefaultOperator.getInstance();
+        try {
+            operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getPersistent(),EMPTY_DATA,CreateMode.PERSISTENT);
+            operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
+        } catch (Exception e) {
+            log.error("Create Root Path failed", e);
+            throw new ZkException(e);
         }
+
+        long machineId = getWorkId();
+        snowflakeUtils = new SnowflakeUtils(this.leafConfig.getZk().getDatacenter(),machineId);
+    }
+
+    /**
+     * 自动生成workerId
+     * @return
+     */
+    private long getWorkId() {
+        return 0;
     }
 
     /**

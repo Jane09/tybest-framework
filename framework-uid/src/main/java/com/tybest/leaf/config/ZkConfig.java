@@ -13,6 +13,8 @@ import java.util.List;
 @Setter
 public class ZkConfig {
 
+    private long datacenter;
+    private long workerId;
     private int port;
     private List<String> servers;
     private String root;

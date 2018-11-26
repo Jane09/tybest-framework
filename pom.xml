@@ -82,6 +82,27 @@
                 <artifactId>jsoup</artifactId>
                 <version>1.11.3</version>
             </dependency>
+            <dependency>
+                <groupId>us.codecraft</groupId>
+                <artifactId>webmagic-core</artifactId>
+                <version>0.7.3</version>
+            </dependency>
+            <dependency>
+                <groupId>us.codecraft</groupId>
+                <artifactId>webmagic-extension</artifactId>
+                <version>0.7.3</version>
+            </dependency>
+            <dependency>
+                <groupId>us.codecraft</groupId>
+                <artifactId>webmagic-selenium</artifactId>
+                <version>0.7.3</version>
+            </dependency>
+            <dependency>
+                <groupId>us.codecraft</groupId>
+                <artifactId>webmagic-scripts</artifactId>
+                <version>0.7.3</version>
+            </dependency>
+
 
             <!-- db -->
             <dependency>

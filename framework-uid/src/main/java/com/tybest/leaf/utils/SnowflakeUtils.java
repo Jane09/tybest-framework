@@ -1,14 +1,10 @@
 package com.tybest.leaf.utils;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * @author tb
  * @date 2018/11/22 13:42
  */
 public final class SnowflakeUtils {
-
     /**
      * 起始的时间戳
      */
@@ -17,16 +13,16 @@ public final class SnowflakeUtils {
     /**
      * 每一部分占用的位数
      */
-    private final static long SEQUENCE_BIT = 12; //序列号占用的位数
-    private final static long MACHINE_BIT = 5;   //机器标识占用的位数
-    private final static long DATACENTER_BIT = 5;//数据中心占用的位数
+    private final static long SEQUENCE_BIT = 12L; //序列号占用的位数
+    private final static long MACHINE_BIT = 5L;   //机器标识占用的位数
+    private final static long DATACENTER_BIT = 5L;//数据中心占用的位数
 
     /**
      * 每一部分的最大值
      */
-    private final static long MAX_DATACENTER_NUM = -1L ^ (-1L << DATACENTER_BIT);
-    private final static long MAX_MACHINE_NUM = -1L ^ (-1L << MACHINE_BIT);
-    private final static long MAX_SEQUENCE = -1L ^ (-1L << SEQUENCE_BIT);
+    private final static long MAX_DATACENTER_NUM = ~(-1L << DATACENTER_BIT);
+    private final static long MAX_MACHINE_NUM = ~(-1L << MACHINE_BIT);
+    private final static long MAX_SEQUENCE = ~(-1L << SEQUENCE_BIT);
 
     /**
      * 每一部分向左的位移
@@ -53,7 +49,7 @@ public final class SnowflakeUtils {
 
     /**
      * 产生下一个ID
-     * @return
+     * @return 返回下一个ID
      */
     public synchronized long nextId() {
         long currStmp = getNewstmp();
@@ -89,37 +85,5 @@ public final class SnowflakeUtils {
 
     private long getNewstmp() {
         return System.currentTimeMillis();
-    }
-
-    public static Set<Long> idSet = new HashSet<>();
-
-    public static void main(String[] args) {
-        SnowflakeUtils snowFlake = new SnowflakeUtils(2, 3);
-        //多线程重试
-        for (long i = 0; i < 1000; i++) {
-            new Thread(new Worker(snowFlake)).start();
-        }
-    }
-
-    static class Worker implements Runnable {
-
-        private SnowflakeUtils snowflakeIdWorker;
-
-
-        public Worker(SnowflakeUtils snowflakeIdWorker) {
-            this.snowflakeIdWorker = snowflakeIdWorker;
-        }
-
-        @Override
-        public void run() {
-            for (int i = 0; i < 1; i++) {
-                Long id = snowflakeIdWorker.nextId();
-                if (idSet.contains(id)) {
-                    System.err.println("存在重复id:" + id);
-                }else {
-                    idSet.add(id);
-                }
-            }
-        }
     }
 }

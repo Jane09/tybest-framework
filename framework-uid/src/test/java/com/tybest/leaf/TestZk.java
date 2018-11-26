@@ -1,11 +1,14 @@
 package com.tybest.leaf;
 
+import com.tybest.leaf.utils.NetUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.CreateMode;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * @author tb
@@ -32,6 +35,44 @@ public class TestZk {
         System.out.println(new String(bb));
         conn.delete().forPath("/my/path");
         System.out.println(conn.checkExists().forPath("/my/path") !=null);
+    }
+
+
+    @Test
+    public void testSequential() throws Exception {
+        CuratorFramework conn = CuratorFrameworkFactory.builder()
+                .connectString("localhost:2181")
+                .retryPolicy(new ExponentialBackoffRetry(1000,3))
+                .sessionTimeoutMs(50000)
+                .connectionTimeoutMs(3000)
+                .build();
+        conn.start();
+        delCascade(conn,"/root");
+        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/a:1", NetUtils.intToBytes(1));
+        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/b:2", NetUtils.intToBytes(2));
+        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/c:3", NetUtils.intToBytes(3));
+        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/d:4", NetUtils.intToBytes(4));
+        List<String> children = conn.getChildren().forPath("/root");
+        children.forEach(s -> {
+            String path = "/root/"+s;
+            try {
+                System.out.println(NetUtils.bytesToint(conn.getData().forPath(path)));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+    private void delCascade(CuratorFramework conn,String root) throws Exception {
+        List<String> children = conn.getChildren().forPath(root);
+        children.forEach(s -> {
+            try {
+                conn.delete().forPath(root+"/"+s);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 
