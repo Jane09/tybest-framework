@@ -52,6 +52,7 @@ public class TestZk {
         conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/b:2", NetUtils.intToBytes(2));
         conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/c:3", NetUtils.intToBytes(3));
         conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/d:4", NetUtils.intToBytes(4));
+        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/e:5", NetUtils.intToBytes(5));
         List<String> children = conn.getChildren().forPath("/root");
         children.forEach(s -> {
             String path = "/root/"+s;
