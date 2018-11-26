@@ -12,8 +12,6 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportFactory;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-
 /**
  * @author tb
  * @date 2018/11/21 16:34
@@ -27,7 +25,6 @@ public class LeafServer {
     private final LeafService leafService;
 
 
-    @PostConstruct
     public void start() {
         TBinaryProtocol.Factory protocolFactory = new TBinaryProtocol.Factory();
         TTransportFactory transportFactory = new TTransportFactory();

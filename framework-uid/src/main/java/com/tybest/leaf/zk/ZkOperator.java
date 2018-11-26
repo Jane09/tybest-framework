@@ -65,6 +65,9 @@ public interface ZkOperator {
      * @throws Exception
      */
     default Stat editNode(CuratorFramework conn, String path, byte[] data) throws Exception {
+        if(!exists(conn,path,false)){
+            return null;
+        }
         return conn.setData().forPath(path,data);
     }
 

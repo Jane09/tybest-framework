@@ -2,6 +2,7 @@ package com.tybest.leaf.zk;
 
 import com.tybest.leaf.config.LeafConfig;
 import com.tybest.leaf.exception.ZkException;
+import com.tybest.leaf.rpc.LeafServer;
 import com.tybest.leaf.rpc.LeafService;
 import com.tybest.leaf.utils.NetUtils;
 import com.tybest.leaf.utils.SnowflakeUtils;
@@ -13,6 +14,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.locks.InterProcessMultiLock;
@@ -24,6 +26,8 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 
@@ -39,10 +43,13 @@ public class ZkServer {
 
     private static final byte[] EMPTY_DATA = new byte[0];
     private static final String FILE_SEPERATEOR = File.separator;
+    private static final String SEPERATOR = "/";
+
+    private final LeafServer leafServer;
     private final LeafConfig leafConfig;
     private final LeafService leafService;
     private volatile boolean started = false;
-
+    private final ScheduledExecutorService executor =new ScheduledThreadPoolExecutor(1,new BasicThreadFactory.Builder().namingPattern("leaf-timer-report-timestam-%d").daemon(true).build());
     private CuratorFramework conn;
     private SnowflakeUtils snowflakeUtils;
 
@@ -60,47 +67,49 @@ public class ZkServer {
      * @param authInfo
      */
     public void start(AuthInfo authInfo) {
-        if(conn == null){
-            try{
-                CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
-                builder.connectString(getConnString())
-                        .connectionTimeoutMs(leafConfig.getZk().getConnectionTimeoutMs())
-                        .sessionTimeoutMs(leafConfig.getZk().getSessionTimeoutMs())
-                        .retryPolicy(new LeafBoundedExponentialBackoffRetry(leafConfig.getZk().getRetryIntervalMs(),leafConfig.getZk().getRetryIntervalceilingMs(),leafConfig.getZk().getRetryTimes()));
-                if(null != authInfo && !StringUtils.isEmpty(authInfo.getScheme()) && null != authInfo.getPayload()) {
-                    builder = builder.authorization(authInfo.getScheme(),authInfo.getPayload());
-                }
-                conn = builder.build();
-                addListener(conn,new DefaultWatcherCallback());
-                conn.start();
-                started = true;
-                log.info("start up zk completely");
-                //准备环境
-                prepare();
-                //
-            }catch (Exception ex){
-                throw new ZkException(ex);
-            }
+        if(null == conn){
+            log.error("启动ZK链接失败");
         }
+        try{
+            CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
+            builder.connectString(getConnString())
+                    .connectionTimeoutMs(leafConfig.getZk().getConnectionTimeoutMs())
+                    .sessionTimeoutMs(leafConfig.getZk().getSessionTimeoutMs())
+                    .retryPolicy(new LeafBoundedExponentialBackoffRetry(leafConfig.getZk().getRetryIntervalMs(),leafConfig.getZk().getRetryIntervalceilingMs(),leafConfig.getZk().getRetryTimes()));
+            if(null != authInfo && !StringUtils.isEmpty(authInfo.getScheme()) && null != authInfo.getPayload()) {
+                builder = builder.authorization(authInfo.getScheme(),authInfo.getPayload());
+            }
+            conn = builder.build();
+            addListener(conn,new DefaultWatcherCallback());
+            conn.start();
+            started = true;
+            log.info("start up zk completely");
+            //准备环境
+            prepare();
+            //
+        }catch (Exception ex){
+            throw new ZkException(ex);
+        }
+        leafServer.start();
     }
-    public CuratorFramework getConn() {
+    private CuratorFramework getConn() {
         if(!started){
             start(null);
         }
         return this.conn;
     }
 
-    public void prepare() throws Exception {
+    private void prepare() throws Exception {
         CuratorFramework conn = getConn();
         ZkOperator operator = DefaultOperator.getInstance();
-        operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getPersistent(),EMPTY_DATA,CreateMode.PERSISTENT);
-        operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
+        operator.addNode(conn,this.leafConfig.getZk().getPersistent(),EMPTY_DATA,CreateMode.PERSISTENT_SEQUENTIAL);
+        operator.addNode(conn,this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
         long machineId = getWorkId(getPath());
         snowflakeUtils = new SnowflakeUtils(this.leafConfig.getZk().getDatacenter(),machineId);
     }
 
     private String getPath() {
-        return NetUtils.getInternetIp()+":"+this.leafConfig.getPort();
+        return SEPERATOR+NetUtils.getInternetIp()+":"+this.leafConfig.getPort();
     }
 
     private String getCompletePeristentPath(String subPath) {
@@ -117,24 +126,45 @@ public class ZkServer {
      */
     private long getWorkId(String path) throws Exception {
         CuratorFramework conn = getConn();
-        boolean exist = DefaultOperator.getInstance().exists(conn,getCompletePeristentPath(getPath()),false);
+        String rpath = getCompletePeristentPath(getPath());
+        boolean exist = DefaultOperator.getInstance().exists(conn,rpath,false);
         if(exist){
-            return NetUtils.bytesToLong(DefaultOperator.getInstance().getData(conn,getCompletePeristentPath(getPath()),false));
+            startTimer();
+            return NetUtils.bytesToLong(DefaultOperator.getInstance().getData(conn,rpath,false));
         }
+
         long workerId = 1L;
         InterProcessMutex mutex = new InterProcessMutex(conn,path);
         try{
             mutex.acquire(1, TimeUnit.SECONDS);
-            List<String> children = conn.getChildren().forPath(getCompletePeristentPath(getPath()));
+            List<String> children = DefaultOperator.getInstance().getChildren(conn,this.leafConfig.getZk().getPersistent(),false);
             if(children != null){
                 workerId= children.size()+1;
             }
-            DefaultOperator.getInstance().addNode(conn,getCompletePeristentPath(getPath()),NetUtils.longToBytes(workerId),CreateMode.PERSISTENT_SEQUENTIAL);
+            DefaultOperator.getInstance().addNode(conn,rpath,NetUtils.longToBytes(workerId),CreateMode.PERSISTENT_SEQUENTIAL);
         }finally {
             mutex.release();
         }
+        startTimer();
         return workerId;
     }
+
+    private void startTimer() throws Exception {
+        boolean exist = DefaultOperator.getInstance().exists(conn,getCompleteEphemeralPath(getPath()),false);
+        if(!exist){
+            DefaultOperator.getInstance().addNode(conn,getCompleteEphemeralPath(getPath()),NetUtils.longToBytes(System.currentTimeMillis()),CreateMode.EPHEMERAL);
+        }
+        //开启定时上传当前机器时间戳
+        executor.scheduleAtFixedRate(() -> {
+            try {
+                log.info("report timpstamp to {}",getCompleteEphemeralPath(getPath()));
+                DefaultOperator.getInstance().editNode(conn,getCompleteEphemeralPath(getPath()),NetUtils.longToBytes(System.currentTimeMillis()));
+            } catch (Exception e) {
+                log.error("Report Timer Error",e);
+            }
+        },5L,5L,TimeUnit.SECONDS);
+    }
+
 
     /**
      * 校验是否已注册
@@ -202,7 +232,7 @@ public class ZkServer {
     private String getConnString() {
         List<String> servers = leafConfig.getZk().getServers();
         List<String> conns = new ArrayList<>();
-        servers.forEach(s -> conns.add(s+":"+leafConfig.getPort()));
-        return StringUtils.join(conns,",")+ leafConfig.getZk().getRoot();
+        servers.forEach(s -> conns.add(s+":"+leafConfig.getZk().getPort()));
+        return StringUtils.join(conns,",");
     }
 }
