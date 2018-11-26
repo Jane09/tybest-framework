@@ -102,11 +102,17 @@ public class ZkServer {
         snowflakeUtils = new SnowflakeUtils(this.leafConfig.getZk().getDatacenter(),machineId);
     }
 
+    private String getPath() {
+        return NetUtils.getInternetIp()+":"+this.leafConfig.getPort();
+    }
+
     /**
      * 自动生成workerId
      * @return
      */
     private long getWorkId() {
+        CuratorFramework conn = getConn();
+
         return 0;
     }
 
