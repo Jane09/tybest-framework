@@ -1,5 +1,6 @@
 package com.tybest.leaf.zk;
 
+import com.tybest.leaf.exception.ZkException;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
@@ -43,7 +44,7 @@ public interface ZkOperator {
         if(!exists(conn,path,false)) {
             return path;
         }
-        return conn.create().creatingParentContainersIfNeeded().withMode(mode).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE).forPath(path,data);
+        return conn.create().withMode(mode).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE).forPath(path,data);
     }
 
     /**
@@ -66,7 +67,7 @@ public interface ZkOperator {
      */
     default Stat editNode(CuratorFramework conn, String path, byte[] data) throws Exception {
         if(!exists(conn,path,false)){
-            return null;
+           throw new ZkException("Node = "+path+" Not Found");
         }
         return conn.setData().forPath(path,data);
     }

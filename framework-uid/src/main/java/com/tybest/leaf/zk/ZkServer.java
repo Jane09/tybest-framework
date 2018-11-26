@@ -1,5 +1,6 @@
 package com.tybest.leaf.zk;
 
+import com.tybest.base.utils.DateUtils;
 import com.tybest.leaf.config.LeafConfig;
 import com.tybest.leaf.exception.ZkException;
 import com.tybest.leaf.rpc.LeafServer;
@@ -67,8 +68,8 @@ public class ZkServer {
      * @param authInfo
      */
     public void start(AuthInfo authInfo) {
-        if(null == conn){
-            log.error("启动ZK链接失败");
+        if(null != conn){
+            close();
         }
         try{
             CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
@@ -101,9 +102,8 @@ public class ZkServer {
 
     private void prepare() throws Exception {
         CuratorFramework conn = getConn();
-        ZkOperator operator = DefaultOperator.getInstance();
-        operator.addNode(conn,this.leafConfig.getZk().getPersistent(),EMPTY_DATA,CreateMode.PERSISTENT_SEQUENTIAL);
-        operator.addNode(conn,this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
+        DefaultOperator.getInstance().addNode(conn,this.leafConfig.getZk().getPersistent(),EMPTY_DATA,CreateMode.PERSISTENT_SEQUENTIAL);
+        DefaultOperator.getInstance().addNode(conn,this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
         long machineId = getWorkId(getPath());
         snowflakeUtils = new SnowflakeUtils(this.leafConfig.getZk().getDatacenter(),machineId);
     }
@@ -142,6 +142,8 @@ public class ZkServer {
                 workerId= children.size()+1;
             }
             DefaultOperator.getInstance().addNode(conn,rpath,NetUtils.longToBytes(workerId),CreateMode.PERSISTENT_SEQUENTIAL);
+        }catch (Exception ex){
+            throw new ZkException(ex);
         }finally {
             mutex.release();
         }
@@ -150,15 +152,20 @@ public class ZkServer {
     }
 
     private void startTimer() throws Exception {
-        boolean exist = DefaultOperator.getInstance().exists(conn,getCompleteEphemeralPath(getPath()),false);
+        String rpath = getCompleteEphemeralPath(getPath());
+        boolean exist = DefaultOperator.getInstance().exists(conn,rpath,false);
         if(!exist){
-            DefaultOperator.getInstance().addNode(conn,getCompleteEphemeralPath(getPath()),NetUtils.longToBytes(System.currentTimeMillis()),CreateMode.EPHEMERAL);
+            DefaultOperator.getInstance().addNode(conn,rpath,NetUtils.longToBytes(System.currentTimeMillis()),CreateMode.EPHEMERAL);
         }
         //开启定时上传当前机器时间戳
         executor.scheduleAtFixedRate(() -> {
             try {
-                log.info("report timpstamp to {}",getCompleteEphemeralPath(getPath()));
-                DefaultOperator.getInstance().editNode(conn,getCompleteEphemeralPath(getPath()),NetUtils.longToBytes(System.currentTimeMillis()));
+                byte[] timestamp = DefaultOperator.getInstance().getData(conn,rpath,false);
+                if(timestamp != null){
+                    log.info("上次上报的时间：{}", DateUtils.format(NetUtils.bytesToLong(timestamp),DateUtils.DEF_TIME));
+                }
+                log.info("report timpstamp to {}",rpath);
+                DefaultOperator.getInstance().editNode(conn,rpath,NetUtils.longToBytes(System.currentTimeMillis()));
             } catch (Exception e) {
                 log.error("Report Timer Error",e);
             }
