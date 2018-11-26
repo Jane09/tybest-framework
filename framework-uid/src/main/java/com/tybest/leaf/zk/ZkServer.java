@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.locks.InterProcessMultiLock;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -72,11 +75,11 @@ public class ZkServer {
                 conn.start();
                 started = true;
                 log.info("start up zk completely");
-
+                //准备环境
                 prepare();
-
+                //
             }catch (Exception ex){
-                //TODO retry strategy
+                throw new ZkException(ex);
             }
         }
     }
@@ -87,18 +90,12 @@ public class ZkServer {
         return this.conn;
     }
 
-    public void prepare(){
+    public void prepare() throws Exception {
         CuratorFramework conn = getConn();
         ZkOperator operator = DefaultOperator.getInstance();
-        try {
-            operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getPersistent(),EMPTY_DATA,CreateMode.PERSISTENT);
-            operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
-        } catch (Exception e) {
-            log.error("Create Root Path failed", e);
-            throw new ZkException(e);
-        }
-
-        long machineId = getWorkId();
+        operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getPersistent(),EMPTY_DATA,CreateMode.PERSISTENT);
+        operator.addNode(conn,this.leafConfig.getZk().getRoot()+this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
+        long machineId = getWorkId(getPath());
         snowflakeUtils = new SnowflakeUtils(this.leafConfig.getZk().getDatacenter(),machineId);
     }
 
@@ -106,14 +103,37 @@ public class ZkServer {
         return NetUtils.getInternetIp()+":"+this.leafConfig.getPort();
     }
 
+    private String getCompletePeristentPath(String subPath) {
+        return this.leafConfig.getZk().getPersistent()+subPath;
+    }
+
+    private String getCompleteEphemeralPath(String subPath) {
+        return this.leafConfig.getZk().getEphemeral()+subPath;
+    }
+
     /**
      * 自动生成workerId
-     * @return
+     * @return 返回workerId
      */
-    private long getWorkId() {
+    private long getWorkId(String path) throws Exception {
         CuratorFramework conn = getConn();
-
-        return 0;
+        boolean exist = DefaultOperator.getInstance().exists(conn,getCompletePeristentPath(getPath()),false);
+        if(exist){
+            return NetUtils.bytesToLong(DefaultOperator.getInstance().getData(conn,getCompletePeristentPath(getPath()),false));
+        }
+        long workerId = 1L;
+        InterProcessMutex mutex = new InterProcessMutex(conn,path);
+        try{
+            mutex.acquire(1, TimeUnit.SECONDS);
+            List<String> children = conn.getChildren().forPath(getCompletePeristentPath(getPath()));
+            if(children != null){
+                workerId= children.size()+1;
+            }
+            DefaultOperator.getInstance().addNode(conn,getCompletePeristentPath(getPath()),NetUtils.longToBytes(workerId),CreateMode.PERSISTENT_SEQUENTIAL);
+        }finally {
+            mutex.release();
+        }
+        return workerId;
     }
 
     /**
