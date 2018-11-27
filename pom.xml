@@ -24,6 +24,7 @@
         <module>framework-microservce</module>
         <module>framework-security</module>
         <module>framework-gateway</module>
+        <module>framework-request</module>
     </modules>
 
     <properties>
