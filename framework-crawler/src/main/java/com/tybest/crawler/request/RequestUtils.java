@@ -20,7 +20,7 @@ public final class RequestUtils {
     private static final int NUM_300 = 300;
     public static final String ERROR_PREFIX = "err_";
 
-    public String doGet(String url) {
+    public static String doGet(String url) {
         HttpGet get = new HttpGet(url);
         try {
             CloseableHttpResponse response = HttpClients.createDefault().execute(get);
@@ -30,7 +30,7 @@ public final class RequestUtils {
         }
     }
 
-    public String doPost(String url) {
+    public static String doPost(String url) {
         HttpPost post = new HttpPost(url);
         try {
             CloseableHttpResponse response = HttpClients.createDefault().execute(post);
@@ -41,7 +41,7 @@ public final class RequestUtils {
     }
 
 
-    private String processResponse(CloseableHttpResponse response) throws IOException {
+    private static String processResponse(CloseableHttpResponse response) throws IOException {
         int status = response.getStatusLine().getStatusCode();
         if (status >= NUM_200 && status < NUM_300) {
             HttpEntity entity = response.getEntity();

@@ -3,8 +3,6 @@ package com.tybest.crawler.response;
 import com.tybest.crawler.request.Request;
 import lombok.Getter;
 
-import java.io.InputStream;
-
 /**
  * @author tb
  * @date 2018/11/27 13:41
@@ -13,14 +11,14 @@ public class Response {
 
     @Getter
     private Request request;
-    private Body    body;
+    private StringBody    body;
 
-    public Response(Request request, InputStream inputStream) {
+    public Response(Request request, String body) {
         this.request = request;
-        this.body = new Body(inputStream, request.charset());
+        this.body = new StringBody(body);
     }
 
-    public Body body() {
+    public StringBody body() {
         return body;
     }
 }

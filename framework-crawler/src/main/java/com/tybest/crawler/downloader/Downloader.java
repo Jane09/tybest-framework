@@ -27,7 +27,10 @@ public class Downloader implements Runnable {
     @Override
     public void run() {
         if(GET.equalsIgnoreCase(request.getMethod())){
-            scheduler.addResponse(new Response(request, null));
+            scheduler.addResponse(new Response(request, RequestUtils.doGet(request.getUrl())));
+        }
+        if(POST.equalsIgnoreCase(request.getMethod())) {
+            scheduler.addResponse(new Response(request,RequestUtils.doPost(request.getUrl())));
         }
     }
 }

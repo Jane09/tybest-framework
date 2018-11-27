@@ -1,8 +1,15 @@
 package com.tybest.crawler;
 
+import com.tybest.crawler.config.Config;
+import com.tybest.crawler.spider.Spider;
+import com.tybest.crawler.spider.SpiderStarter;
+import com.tybest.crawler.spider.impl.DoubaiSpider;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author tb
@@ -16,7 +23,10 @@ public class CrawlerApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
-
+    public void run(String... args) {
+        List<Spider> spiders = new ArrayList<>();
+        spiders.add(new DoubaiSpider("doubai"));
+        SpiderStarter starter = new SpiderStarter(spiders, Config.me());
+        starter.start();
     }
 }
