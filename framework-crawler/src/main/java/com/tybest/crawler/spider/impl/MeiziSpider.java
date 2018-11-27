@@ -42,7 +42,7 @@ public class MeiziSpider extends Spider {
         this.addPipeline((Pipeline<List<String>>) (item, request) -> {
             item.forEach(imgUrl -> {
                 log.info("开始下载: {}", imgUrl);
-                RequestUtils.loadImage(imgUrl,storageDir);
+                RequestUtils.loadImage(imgUrl, storageDir);
             });
 
             log.info("[{}] 图片下载 OJ8K.", request.getUrl());
@@ -52,8 +52,8 @@ public class MeiziSpider extends Spider {
     }
 
     @Override
-    protected <T> Result<T> parse(Response response) {
-        Result   result   = new Result<>();
+    protected Result parse(Response response) {
+        Result result = new Result<>();
         Elements elements = response.body().css("#maincontent > div.inWrap > ul > li:nth-child(1) > div > div > a");
         log.info("elements size: {}", elements.size());
 
@@ -67,8 +67,8 @@ public class MeiziSpider extends Spider {
         // 获取下一页 URL
         Optional<Element> nextEl = response.body().css("#wp_page_numbers > ul > li > a").stream().filter(element -> "下一页".equals(element.text())).findFirst();
         if (nextEl.isPresent()) {
-            String          nextPageUrl = "http://www.meizitu.com/a/" + nextEl.get().attr("href");
-            Request<String> nextReq     = MeiziSpider.this.makeRequest(nextPageUrl, this::parse);
+            String nextPageUrl = "http://www.meizitu.com/a/" + nextEl.get().attr("href");
+            Request<String> nextReq = MeiziSpider.this.makeRequest(nextPageUrl, this::parse);
             result.addRequest(this.resetRequest(nextReq));
         }
         return result;
