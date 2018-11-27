@@ -1,13 +1,18 @@
 package com.tybest.crawler.request;
 
+import com.tybest.crawler.config.UserAgent;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -37,6 +42,19 @@ public final class RequestUtils {
             return processResponse(response);
         } catch (IOException e) {
             return ERROR_PREFIX+e.getMessage();
+        }
+    }
+
+
+    public static void loadImage(String url, String storagePath) {
+        HttpGet get = new HttpGet(url);
+        get.setHeader("Referer",url);
+        get.setHeader("User-Agent", UserAgent.CHROME_FOR_MAC);
+        try {
+            CloseableHttpResponse response = HttpClients.createDefault().execute(get);
+            IOUtils.copyLarge(response.getEntity().getContent(),new FileOutputStream(new File(storagePath+System.currentTimeMillis()+".jpg")));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
