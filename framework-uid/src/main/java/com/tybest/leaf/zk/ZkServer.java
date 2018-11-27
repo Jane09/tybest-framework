@@ -120,9 +120,6 @@ public class ZkServer {
 
         String epath = DefaultOperator.getInstance().addNode(conn,this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
         log.info("create ephemeral node for path = {}",epath);
-
-
-
     }
 
     private String getPath() {
@@ -152,9 +149,8 @@ public class ZkServer {
     }
 
     private boolean isAverageRange() throws Exception {
-        String rpath = getCompleteEphemeralPath(getPath());
         String ip = NetUtils.getInternetIp();
-        List<String> children = DefaultOperator.getInstance().getChildren(conn,rpath,false);
+        List<String> children = DefaultOperator.getInstance().getChildren(conn,this.leafConfig.getZk().getEphemeral(),false);
         BigInteger avg = new BigInteger("0");
         if(children != null){
             int size = children.size();
