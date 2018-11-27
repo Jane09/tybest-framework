@@ -19,5 +19,5 @@ public class SpiderStater {
     private Scheduler scheduler;
     private ExecutorService executorService;
 
-    
+
 }
