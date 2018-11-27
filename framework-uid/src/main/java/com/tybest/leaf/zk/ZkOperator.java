@@ -41,7 +41,7 @@ public interface ZkOperator {
      * @throws Exception
      */
     default String addNode(CuratorFramework conn, String path, byte[] data, CreateMode mode) throws Exception {
-        if(!exists(conn,path,false)) {
+        if(exists(conn,path,false)) {
             return path;
         }
         return conn.create().withMode(mode).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE).forPath(path,data);

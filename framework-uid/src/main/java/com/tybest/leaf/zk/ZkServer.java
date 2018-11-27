@@ -3,6 +3,7 @@ package com.tybest.leaf.zk;
 import com.tybest.base.utils.DateUtils;
 import com.tybest.leaf.config.LeafConfig;
 import com.tybest.leaf.exception.ZkException;
+import com.tybest.leaf.rpc.LeafClient;
 import com.tybest.leaf.rpc.LeafServer;
 import com.tybest.leaf.rpc.LeafService;
 import com.tybest.leaf.utils.NetUtils;
@@ -18,13 +19,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.recipes.locks.InterProcessMultiLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -45,6 +46,7 @@ public class ZkServer {
     private static final byte[] EMPTY_DATA = new byte[0];
     private static final String FILE_SEPERATEOR = File.separator;
     private static final String SEPERATOR = "/";
+    private static final String SICILON = ":";
 
     private final LeafServer leafServer;
     private final LeafConfig leafConfig;
@@ -65,7 +67,6 @@ public class ZkServer {
      *
      *
      * 启动服务
-     * @param authInfo
      */
     public void start(AuthInfo authInfo) {
         if(null != conn){
@@ -87,7 +88,19 @@ public class ZkServer {
             log.info("start up zk completely");
             //准备环境
             prepare();
-            //
+            //校验周期性上传的时间
+            if(!checkCycleUploadTimestamp()){
+                throw new ZkException("The current machine time had been changed");
+            }
+            //校验平均时间
+            if(!isAverageRange()){
+                throw new ZkException("Current server timestamp is not illegal");
+            }
+            long machineId = getWorkId(getPath());
+            log.info("obtain a machineId = {}", machineId);
+            //启动临时节点
+            startTimer(machineId);
+            log.info("Next uid = {}",this.snowflakeUtils.nextId());
         }catch (Exception ex){
             throw new ZkException(ex);
         }
@@ -102,10 +115,14 @@ public class ZkServer {
 
     private void prepare() throws Exception {
         CuratorFramework conn = getConn();
-        DefaultOperator.getInstance().addNode(conn,this.leafConfig.getZk().getPersistent(),EMPTY_DATA,CreateMode.PERSISTENT_SEQUENTIAL);
-        DefaultOperator.getInstance().addNode(conn,this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
-        long machineId = getWorkId(getPath());
-        snowflakeUtils = new SnowflakeUtils(this.leafConfig.getZk().getDatacenter(),machineId);
+        String ppath = DefaultOperator.getInstance().addNode(conn,this.leafConfig.getZk().getPersistent(),EMPTY_DATA,CreateMode.PERSISTENT);
+        log.info("create persistent node for path = {}",ppath);
+
+        String epath = DefaultOperator.getInstance().addNode(conn,this.leafConfig.getZk().getEphemeral(),EMPTY_DATA,CreateMode.PERSISTENT);
+        log.info("create ephemeral node for path = {}",epath);
+
+
+
     }
 
     private String getPath() {
@@ -120,6 +137,51 @@ public class ZkServer {
         return this.leafConfig.getZk().getEphemeral()+subPath;
     }
 
+    private boolean checkCycleUploadTimestamp() throws Exception {
+        String rpath = getCompleteEphemeralPath(getPath());
+        byte[] timestamp = DefaultOperator.getInstance().getData(conn,rpath,false);
+        if(timestamp == null){
+            return true;
+        }
+        long last = NetUtils.bytesToLong(timestamp);
+        if(last > System.currentTimeMillis()) {
+            log.error("Cycle Upload Timestamp greater than the now machine time ");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isAverageRange() throws Exception {
+        String rpath = getCompleteEphemeralPath(getPath());
+        String ip = NetUtils.getInternetIp();
+        List<String> children = DefaultOperator.getInstance().getChildren(conn,rpath,false);
+        BigInteger avg = new BigInteger("0");
+        if(children != null){
+            int size = children.size();
+           for(String server: children){
+                String[] ss = server.split(SICILON);
+                long timestamp = LeafClient.getTimestamp(ss[0],Integer.parseInt(ss[1]));
+                log.info("ip={} port={} timestamp={}",ss[0],ss[1],timestamp);
+                if(timestamp > 0 && !ip.equals(ss[0])) {
+                    avg = avg.add(BigInteger.valueOf(timestamp));
+                }
+            }
+            if(avg.compareTo(BigInteger.ZERO) == 0){
+                return true;
+            }
+            if(size ==1){
+                return true;
+            }
+            avg = avg.divide(BigInteger.valueOf(size-1));
+            if(Math.abs(avg.longValue() - System.currentTimeMillis()) > this.leafConfig.getZk().getAverageTimestampThreshold()) {
+                log.error("Current server timestamp :{} does not match the average timestamp: {}",DateUtils.format(System.currentTimeMillis(),DateUtils.DEF_TIME),
+                        DateUtils.format(avg.longValue(),DateUtils.DEF_TIME));
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * 自动生成workerId
      * @return 返回workerId
@@ -129,10 +191,8 @@ public class ZkServer {
         String rpath = getCompletePeristentPath(getPath());
         boolean exist = DefaultOperator.getInstance().exists(conn,rpath,false);
         if(exist){
-            startTimer();
             return NetUtils.bytesToLong(DefaultOperator.getInstance().getData(conn,rpath,false));
         }
-
         long workerId = 1L;
         InterProcessMutex mutex = new InterProcessMutex(conn,path);
         try{
@@ -141,17 +201,18 @@ public class ZkServer {
             if(children != null){
                 workerId= children.size()+1;
             }
-            DefaultOperator.getInstance().addNode(conn,rpath,NetUtils.longToBytes(workerId),CreateMode.PERSISTENT_SEQUENTIAL);
+            DefaultOperator.getInstance().addNode(conn,rpath,NetUtils.longToBytes(workerId),CreateMode.PERSISTENT);
         }catch (Exception ex){
             throw new ZkException(ex);
         }finally {
             mutex.release();
         }
-        startTimer();
+
         return workerId;
     }
 
-    private void startTimer() throws Exception {
+    private void startTimer(long machineId) throws Exception {
+        snowflakeUtils = new SnowflakeUtils(this.leafConfig.getZk().getDatacenter(),machineId);
         String rpath = getCompleteEphemeralPath(getPath());
         boolean exist = DefaultOperator.getInstance().exists(conn,rpath,false);
         if(!exist){
@@ -169,47 +230,14 @@ public class ZkServer {
             } catch (Exception e) {
                 log.error("Report Timer Error",e);
             }
-        },5L,5L,TimeUnit.SECONDS);
+        },3L,3L,TimeUnit.SECONDS);
     }
-
-
-    /**
-     * 校验是否已注册
-     */
-    private void checkRegister(){
-
-    }
-
-    /**
-     * 获取所有节点
-     */
-    private void getEphemeralNodes() {
-
-    }
-
-
-    private void getWorkId(String ip, String port) {
-
-    }
-
-    /**
-     * 校验周期性上传的时间戳
-     */
-    private void checkCycleUploadTimestamp(){
-
-    }
-
-
-    private void checkAverageConstrint() {
-
-    }
-
 
 
     /**
      * 关闭
      */
-    public void close() {
+    private void close() {
         if(this.conn != null){
             this.conn.close();
             this.conn = null;
@@ -226,9 +254,7 @@ public class ZkServer {
                 callback.execute(event.getStat(),event.getType(),event.getPath());
             }
         });
-        cf.getUnhandledErrorListenable().addListener((s, throwable) -> {
-            log.error("error message: {}",s,throwable);
-        });
+        cf.getUnhandledErrorListenable().addListener((s, throwable) -> log.error("error message: {}",s,throwable));
     }
 
     /**

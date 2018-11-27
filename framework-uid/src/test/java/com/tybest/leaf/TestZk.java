@@ -69,21 +69,15 @@ public class TestZk {
     @Test
     public void testPersistent() throws Exception {
         CuratorFramework conn = CuratorFrameworkFactory.builder()
-                .connectString("localhost:2181,localhost:2182")
+                .connectString("localhost:2181")
                 .retryPolicy(new ExponentialBackoffRetry(1000,3))
                 .sessionTimeoutMs(50000)
                 .connectionTimeoutMs(3000)
                 .build();
         conn.start();
-        delCascade(conn,"/root");
-        conn.create().withMode(CreateMode.PERSISTENT).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE).forPath("/root/a:1", NetUtils.intToBytes(1));
-        conn.create().withMode(CreateMode.PERSISTENT).forPath("/root/b:2", NetUtils.intToBytes(2));
-        conn.create().withMode(CreateMode.PERSISTENT).forPath("/root/c:3", NetUtils.intToBytes(3));
-        conn.create().withMode(CreateMode.PERSISTENT).forPath("/root/d:4", NetUtils.intToBytes(4));
-        conn.create().withMode(CreateMode.PERSISTENT).forPath("/root/e:5", NetUtils.intToBytes(5));
-        List<String> children = conn.getChildren().forPath("/root");
+        List<String> children = conn.getChildren().forPath("/leaf-ephemeral");
         children.forEach(s -> {
-            String path = "/root/"+s;
+            String path = "/leaf-ephemeral/"+s;
             try {
                 System.out.println(NetUtils.bytesToint(conn.getData().forPath(path)));
             } catch (Exception e) {

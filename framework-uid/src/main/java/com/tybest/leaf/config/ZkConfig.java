@@ -17,7 +17,6 @@ public class ZkConfig {
     private long workerId;
     private int port;
     private List<String> servers;
-    private String root;
     private String persistent;
     private String ephemeral;
     private int sessionTimeoutMs;
