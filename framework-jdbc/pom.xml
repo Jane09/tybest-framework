@@ -14,6 +14,7 @@
     <modules>
         <module>framework-jdbc-databus</module>
         <module>framework-jdbc-canal</module>
+        <module>framework-jdbc-sharding</module>
     </modules>
 
 
