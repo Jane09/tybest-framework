@@ -9,6 +9,7 @@ import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,9 +64,17 @@ public class RawDataSharding {
     public void test() throws SQLException {
         DataSource dataSource = getDataSource();
         Connection conn = dataSource.getConnection();
-        String sql = "insert into t_order (order_id,user_id) values (7,7),(7,8),(8,8),(8,9)";
-        PreparedStatement statement =conn.prepareStatement(sql);
-        statement.execute();
+//        String sql = "insert into t_order (order_id,user_id) values (7,7),(7,8),(8,8),(8,9)";
+//        PreparedStatement statement =conn.prepareStatement(sql);
+//        statement.execute();
+
+        String query = "select order_id,user_id from t_order";
+        PreparedStatement queryStat = conn.prepareStatement(query);
+        try(ResultSet rs = queryStat.executeQuery()){
+            while (rs.next()){
+                System.out.println(rs.getLong(1)+" "+rs.getLong(2));
+            }
+        }
     }
 
 }
