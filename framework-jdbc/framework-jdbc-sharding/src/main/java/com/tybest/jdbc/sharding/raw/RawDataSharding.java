@@ -8,7 +8,10 @@ import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.HintShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
+import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -66,6 +69,14 @@ public class RawDataSharding {
 //        HintManager.getInstance().setMasterRouteOnly();
 
 //        orderTableRuleConfiguration.setDatabaseShardingStrategyConfig();
+
+        //加入数据库治理
+        RegistryCenterConfiguration config = new RegistryCenterConfiguration();
+        config.setServerLists("localhost:2181");
+        config.setNamespace("sharding-sphere-orchestration");
+        OrchestrationConfiguration orchestrationConfiguration = new OrchestrationConfiguration("orchestration-sharding-data-source",config,false);
+
+
         //分表分库策略
         orderTableRuleConfiguration.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("user_id","ds${user_id % 2}"));
         orderTableRuleConfiguration.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id","t_order${order_id % 2}"));
@@ -73,7 +84,9 @@ public class RawDataSharding {
         ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
         shardingRuleConfiguration.getTableRuleConfigs().add(orderTableRuleConfiguration);
 
-        return ShardingDataSourceFactory.createDataSource(dataSourceMap,shardingRuleConfiguration,new ConcurrentHashMap<>(0),new Properties());
+//        return ShardingDataSourceFactory.createDataSource(dataSourceMap,shardingRuleConfiguration,new ConcurrentHashMap<>(0),new Properties());
+        return OrchestrationShardingDataSourceFactory
+                .createDataSource(dataSourceMap,shardingRuleConfiguration,new ConcurrentHashMap<>(0),new Properties(),orchestrationConfiguration);
     }
 
     public void test() throws SQLException {
@@ -90,7 +103,7 @@ public class RawDataSharding {
                 System.out.println(rs.getLong(1)+" "+rs.getLong(2));
             }
         }finally {
-            conn.close();
+//            conn.close();
         }
     }
 
