@@ -1,0 +1,30 @@
+sharding:
+  jdbc:
+    datasource:
+      names: master,slave0,slave1
+      master:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/ds_master?useSSL=false
+        username: root
+        password: 123456
+      slave0:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/ds_slave0?useSSL=false
+        username: root
+        password: 123456
+      slave1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/ds_slave1?useSSL=false
+        username: root
+        password: 123456
+    config:
+      masterslave:
+        name: ds_master_slave
+        master-data-source-name: master
+        slave-data-source-names: slave0,slave1
+        props:
+          sql:
+            show: true
