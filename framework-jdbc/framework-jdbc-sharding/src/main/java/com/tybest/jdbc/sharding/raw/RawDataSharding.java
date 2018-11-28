@@ -74,6 +74,8 @@ public class RawDataSharding {
             while (rs.next()){
                 System.out.println(rs.getLong(1)+" "+rs.getLong(2));
             }
+        }finally {
+            conn.close();
         }
     }
 

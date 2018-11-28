@@ -39,5 +39,6 @@ public class RawYamlDataSharding {
         String sql = "insert into t_order (order_id,user_id) values (9,9),(9,10)";
         PreparedStatement statement =conn.prepareStatement(sql);
         statement.execute();
+        conn.close();
     }
 }

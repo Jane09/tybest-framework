@@ -30,6 +30,8 @@ public class SpringBootDbSharding {
             while (rs.next()){
                 System.out.println(rs.getLong(1));
             }
+        }finally {
+            conn.close();
         }
     }
 }
