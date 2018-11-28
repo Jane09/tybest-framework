@@ -1,7 +1,11 @@
 package com.tybest.jdbc.sharding;
 
+import com.tybest.jdbc.sharding.raw.SpringBootDbSharding;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+
+import java.sql.SQLException;
 
 /**
  * @author tb
@@ -10,7 +14,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ShardingApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(ShardingApplication.class);
+    public static void main(String[] args) throws SQLException {
+        ApplicationContext context = SpringApplication.run(ShardingApplication.class);
+        SpringBootDbSharding sharding = context.getBean(SpringBootDbSharding.class);
+        sharding.test();
     }
 }

@@ -46,6 +46,7 @@
         <curator.version>4.0.1</curator.version>
         <fastjson.version>1.2.51</fastjson.version>
         <zookeeper.version>3.4.13</zookeeper.version>
+        <shardingsphere.version>3.0.0</shardingsphere.version>
     </properties>
 
     <dependencyManagement>
@@ -121,11 +122,23 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql-jdbc.version}</version>
             </dependency>
+            <!-- sharding -->
             <dependency>
                 <groupId>io.shardingsphere</groupId>
                 <artifactId>sharding-jdbc-core</artifactId>
-                <version>3.0.0</version>
+                <version>${shardingsphere.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-jdbc-spring-namespace</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.shardingsphere</groupId>
+                <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt</artifactId>
