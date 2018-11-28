@@ -20,13 +20,13 @@ sharding:
     config:
       sharding:
         tables:
-          t-order:
+          t_order:
             actual-data-nodes: ds$->{0..1}.t_order$->{0..1}
             table-strategy:
               inline:
                 sharding-column: order_id
                 algorithm-expression: t_order$->{order_id % 2}
-          t-order-item:
+          t_order_item:
             actual-data-nodes: ds$->{0..1}.t_order_item$->{0..1}
             table-strategy:
               inline:
