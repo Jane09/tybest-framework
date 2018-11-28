@@ -21,10 +21,10 @@
         <module>framework-crawler</module>
         <module>framework-base</module>
         <module>framework-jdbc</module>
-        <module>framework-microservce</module>
         <module>framework-security</module>
         <module>framework-gateway</module>
         <module>framework-request</module>
+        <module>framework-micros</module>
     </modules>
 
     <properties>
