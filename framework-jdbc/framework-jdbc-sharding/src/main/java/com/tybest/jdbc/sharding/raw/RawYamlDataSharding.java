@@ -29,7 +29,6 @@ public class RawYamlDataSharding {
             if(url != null){
                 return YamlShardingDataSourceFactory.createDataSource(new File(url.getPath()));
             }
-            System.out.println();
         }
         throw new RuntimeException("create datasource failed");
     }
