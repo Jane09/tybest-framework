@@ -51,12 +51,14 @@ public class TestZk {
         conn.start();
         delCascade(conn,"/root");
         conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/a:1", NetUtils.intToBytes(1));
-        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/b:2", NetUtils.intToBytes(2));
-        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/c:3", NetUtils.intToBytes(3));
-        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/d:4", NetUtils.intToBytes(4));
-        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/e:5", NetUtils.intToBytes(5));
+        System.out.println(isNode(conn,"/root/a:1"));
+        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/a:1", NetUtils.intToBytes(2));
+//        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/c:3", NetUtils.intToBytes(3));
+//        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/d:4", NetUtils.intToBytes(4));
+//        conn.create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath("/root/e:5", NetUtils.intToBytes(5));
         List<String> children = conn.getChildren().forPath("/root");
         children.forEach(s -> {
+            System.out.println(s);
             String path = "/root/"+s;
             try {
                 System.out.println(NetUtils.bytesToint(conn.getData().forPath(path)));

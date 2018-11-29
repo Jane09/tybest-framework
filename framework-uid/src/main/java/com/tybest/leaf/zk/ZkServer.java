@@ -193,11 +193,9 @@ public class ZkServer {
         InterProcessMutex mutex = new InterProcessMutex(conn,path);
         try{
             mutex.acquire(1, TimeUnit.SECONDS);
-            List<String> children = DefaultOperator.getInstance().getChildren(conn,this.leafConfig.getZk().getPersistent(),false);
-            if(children != null){
-                workerId= children.size()+1;
-            }
-            DefaultOperator.getInstance().addNode(conn,rpath,NetUtils.longToBytes(workerId),CreateMode.PERSISTENT);
+            String npath = DefaultOperator.getInstance().addNode(conn,rpath,NetUtils.longToBytes(workerId),CreateMode.PERSISTENT_SEQUENTIAL);
+            //0000000051
+            workerId = Long.parseLong(npath.replace(rpath,""));
         }catch (Exception ex){
             throw new ZkException(ex);
         }finally {
