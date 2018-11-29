@@ -25,7 +25,7 @@ public abstract class TSecurityConfigurerAdatper extends WebSecurityConfigurerAd
     private final TAccountService accountService;
     private final AuthenticationManager authenticationManager;
     /**
-     * 认真管理
+     * 认证管理
      */
     private final TAuthenticateConfigurer authenticateConfigurer;
 

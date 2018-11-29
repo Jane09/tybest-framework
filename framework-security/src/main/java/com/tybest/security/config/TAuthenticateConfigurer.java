@@ -36,8 +36,6 @@ public class TAuthenticateConfigurer {
         this.tokenProcessor = new JwtTokenProcessor(this.securityConfig.getJwtToken());
     }
 
-
-
     /**
      * 配置url过滤
      * @param http
@@ -47,7 +45,8 @@ public class TAuthenticateConfigurer {
         //跨域、csrf攻击、记住我
         http.cors().configurationSource(new TClientCorsConfigurationSource(securityConfig))
             .and().csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and().rememberMe().rememberMeServices(new TClientRememberMeService(this.tokenProcessor));
+            .and().rememberMe().rememberMeServices(new TClientRememberMeService(this.tokenProcessor))
+        ;
         //anon配置
         if (securityConfig.getIgnoreUrls() != null) {
             http.authorizeRequests().antMatchers(securityConfig.getIgnoreUrls().toArray(new String[0])).permitAll();
