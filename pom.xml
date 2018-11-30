@@ -24,6 +24,7 @@
         <module>framework-security</module>
         <module>framework-gateway</module>
         <module>framework-micros</module>
+        <module>framework-tcc</module>
     </modules>
 
     <properties>
