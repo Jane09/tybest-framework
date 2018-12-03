@@ -32,7 +32,9 @@ public class GenerateHtmlService {
 
     private static int corePoolSize = Runtime.getRuntime().availableProcessors();
     private static ThreadPoolExecutor executor  = new ThreadPoolExecutor(corePoolSize, corePoolSize+1, 10L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(1000), new Builder().namingPattern("seckill-generator-html-task-%d").daemon(true).build());
+            new LinkedBlockingQueue<>(1000),
+            new Builder().namingPattern("seckill-generator-html-task-%d").daemon(true).build(),
+            new ThreadPoolExecutor.AbortPolicy());
 
     private final Configuration configuration;
     private final SeckillRepository seckillRepository;
