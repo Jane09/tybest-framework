@@ -25,6 +25,7 @@
         <module>framework-gateway</module>
         <module>framework-micros</module>
         <module>framework-tcc</module>
+        <module>framework-seckill</module>
     </modules>
 
     <properties>
@@ -115,6 +116,31 @@
                 <version>0.7.3</version>
             </dependency>
 
+            <dependency>
+                <groupId>net.sourceforge.nekohtml</groupId>
+                <artifactId>nekohtml</artifactId>
+                <version>1.9.22</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>2.9.2</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>2.9.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>3.4.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>3.9.1</version>
+            </dependency>
 
             <!-- db -->
             <dependency>

@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: seckill
+server:
+  port: 8080
+  servlet:
+    context-path: /seckill
+    session:
+      timeout: 60
+  tomcat:
+    max-threads: 100
+    uri-encoding: UTF-8
+logging:
+  level:
+    root: INFO
