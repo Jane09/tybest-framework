@@ -1,7 +1,10 @@
 package com.tybest.leaf.utils;
 
 import com.tybest.leaf.exception.InternalException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.*;
 import java.util.Enumeration;
 
@@ -9,9 +12,11 @@ import java.util.Enumeration;
  * @author tb
  * @date 2018/11/22 14:18
  */
+@Slf4j
 public final class NetUtils {
 
     private static final String LOCALHOST = "localhost";
+    private static final String UNKNOWN = "unknown";
 
 
     public static void main(String[] args) {
@@ -173,5 +178,36 @@ public final class NetUtils {
             throw new InternalException(e);
         }
         return null;
+    }
+
+    public static String getIpAddr(HttpServletRequest request) {
+        String ip = null;
+        try {
+            ip = request.getHeader("x-forwarded-for");
+            if (StringUtils.isEmpty(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
+                ip = request.getHeader("Proxy-Client-IP");
+            }
+            if (StringUtils.isEmpty(ip) || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip)) {
+                ip = request.getHeader("WL-Proxy-Client-IP");
+            }
+            if (StringUtils.isEmpty(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
+                ip = request.getHeader("HTTP_CLIENT_IP");
+            }
+            if (StringUtils.isEmpty(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
+                ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+            }
+            if (StringUtils.isEmpty(ip) || UNKNOWN.equalsIgnoreCase(ip)) {
+                ip = request.getRemoteAddr();
+            }
+        } catch (Exception e) {
+            log.error("IPUtils ERROR ", e);
+        }
+        // 使用代理，则获取第一个IP地址
+        if (StringUtils.isEmpty(ip) && ip.length() > 15) {
+            if (ip.indexOf(",") > 0) {
+                ip = ip.substring(0, ip.indexOf(","));
+            }
+        }
+        return ip;
     }
 }
