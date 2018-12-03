@@ -1,4 +1,7 @@
 package com.tybest.seckill.repository;
 
-public interface SeckillRepository {
+import com.tybest.seckill.entity.Seckill;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SeckillRepository extends JpaRepository<Seckill,Long> {
 }

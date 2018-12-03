@@ -47,7 +47,7 @@ spring:
       buffer-memory: 524288
   freemarker:
     template-loader-path: classpath:/static/template/
-    suffix: .ftl
+    suffix: .flt
     enabled: true
     cache: false
     charset: UTF-8
