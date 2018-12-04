@@ -2,8 +2,9 @@ package com.tybest.seckill.controller;
 
 import com.tybest.seckill.entity.SuccessKilled;
 import com.tybest.seckill.model.Result;
-import com.tybest.seckill.model.StateEnum;
 import com.tybest.seckill.queue.SeckillQueue;
+import com.tybest.seckill.queue.disruptor.DisruptorQueue;
+import com.tybest.seckill.queue.disruptor.SeckillEvent;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -122,7 +123,11 @@ public class SeckillController extends AbstractBaseController {
     @ApiOperation(value="秒杀八(Disruptor)")
     @PostMapping("/startDisruptor")
     public Result startDisruptor(long seckillId){
-
-        return Result.ok(StateEnum.SUCCESS);
+        return seckillQueue(seckillId, (seckillService, seckillId1, userId) -> {
+            SeckillEvent event = new SeckillEvent();
+            event.setSeckillId(seckillId1);
+            event.setUserId(userId);
+            DisruptorQueue.produce(event);
+        });
     }
 }

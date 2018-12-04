@@ -3,7 +3,6 @@ package com.tybest.seckill.controller;
 import com.tybest.seckill.model.Result;
 import com.tybest.seckill.model.StateEnum;
 import com.tybest.seckill.service.SeckillService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;

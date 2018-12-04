@@ -1,5 +1,6 @@
 package com.tybest.seckill;
 
+import com.tybest.seckill.utils.SpringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -19,6 +20,6 @@ public class SeckillApplication {
      * 启动前 请配置application.properties中相关redis、zk以及kafka相关地址
      */
     public static void main(String[] args) {
-        SpringApplication.run(SeckillApplication.class);
+        SpringUtils.setApplicationContext(SpringApplication.run(SeckillApplication.class));
     }
 }
