@@ -8,10 +8,7 @@ import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * @author tb
@@ -48,6 +45,36 @@ public abstract class AbstractBaseController {
         } catch (InterruptedException e) {
             log.error("线程{}被中断",Thread.currentThread().getName());
             return Result.error();
+        }
+        long count = seckillService.getSeckillCount(seckillId);
+        log.info("共卖出 {} 件商品",count);
+        return Result.ok();
+    }
+
+
+
+    protected Result seckillInstant(long seckillId, SeckillProcesosr procesosr) {
+        final CyclicBarrier barrier = new CyclicBarrier(seckillNum, new Runnable() {
+            private int count;
+            @Override
+            public void run() {
+                count ++;
+                log.info("count = {}",count);
+            }
+        });
+        final long id = seckillId;
+        log.info("开始秒杀");
+        for(int i=1;i<=seckillNum;i++){
+            final long userId = i;
+            executor.execute(() -> {
+                log.info("用户：{} 准备完毕...",userId);
+                try {
+                    barrier.await();
+                } catch (InterruptedException | BrokenBarrierException e) {
+                    log.error("线程：{} 异常",Thread.currentThread().getName(),e);
+                }
+                procesosr.processor(seckillService,id,userId);
+            });
         }
         long count = seckillService.getSeckillCount(seckillId);
         log.info("共卖出 {} 件商品",count);

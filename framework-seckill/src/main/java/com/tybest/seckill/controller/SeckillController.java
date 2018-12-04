@@ -26,7 +26,7 @@ public class SeckillController extends AbstractBaseController {
     @ApiOperation(value="秒杀一(最low实现)")
     @PostMapping("/start")
     public Result start(long seckillId) {
-        return seckill(seckillId, (seckillService, seckillId1, userId) -> {
+        return seckillInstant(seckillId, (seckillService, seckillId1, userId) -> {
             Result result = seckillService.seckillOne(seckillId1, userId);
             if(result!=null){
                 log.info("用户:{}{}",userId,result.get("msg"));

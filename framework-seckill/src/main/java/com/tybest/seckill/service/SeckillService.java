@@ -36,7 +36,7 @@ public class SeckillService {
         return seckillRepository.findAll();
     }
 
-    public Seckill findById(long seckillId) {
+    private Seckill findById(long seckillId) {
         return seckillRepository.findById(seckillId).orElse(null);
     }
 
