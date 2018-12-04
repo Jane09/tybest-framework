@@ -14,7 +14,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
 
     @Override
     protected void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController( "/" ).setViewName( "forward:/index.shtml" );
+        registry.addViewController("/").setViewName( "forward:/index.shtml" );
         registry.setOrder( Ordered.HIGHEST_PRECEDENCE );
         super.addViewControllers( registry );
     }

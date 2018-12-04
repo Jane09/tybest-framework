@@ -5,7 +5,7 @@ spring:
     livereload:
       enabled: true
   mvc:
-    static-path-pattern: "/**"
+    static-path-pattern: /**
   datasource:
     url: jdbc:mysql://localhost:3306/seckill?characterEncoding=utf-8&useSSL=false
     username: root
@@ -37,20 +37,20 @@ spring:
     mode: LEGACYHTML5
     cache: false
   ##kafka configuration
-#  kafka:
-#    bootstrap-servers: 127.0.0.1:9092
-#    consumer:
-#      group-id: 0
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#    producer:
-#      key-serializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-serializer: org.apache.kafka.common.serialization.StringDeserializer
-#      batch-size: 65536
-#      buffer-memory: 524288
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    consumer:
+      group-id: 0
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-serializer: org.apache.kafka.common.serialization.StringDeserializer
+      batch-size: 65536
+      buffer-memory: 524288
   freemarker:
     template-loader-path: classpath:/static/template/
-    suffix: ".flt"
+    suffix: .flt
     enabled: true
     cache: false
     charset: UTF-8
