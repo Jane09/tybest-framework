@@ -6,7 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum StateEnum {
-
     MUCH(2, "人太多，请稍后!"),
     SUCCESS(1,"秒杀成功"),
     FINISH(0,"秒杀结束"),
