@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -29,6 +30,10 @@ public class SeckillService {
     private final DynamicNativeQuery dynamicNativeQuery;
     private final SeckillRepository seckillRepository;
 
+
+    public List<Seckill> getSeckillList() {
+        return seckillRepository.findAll();
+    }
 
     public Seckill findById(long seckillId) {
         return seckillRepository.findById(seckillId).orElse(null);
