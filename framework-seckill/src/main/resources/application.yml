@@ -33,18 +33,21 @@ spring:
         min-idle: 0
   session:
     store-type: redis
+  thymeleaf:
+    mode: LEGACYHTML5
+    cache: false
   ##kafka configuration
-  kafka:
-    bootstrap-servers: 127.0.0.1:9092
-    consumer:
-      group-id: 0
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-serializer: org.apache.kafka.common.serialization.StringDeserializer
-      batch-size: 65536
-      buffer-memory: 524288
+#  kafka:
+#    bootstrap-servers: 127.0.0.1:9092
+#    consumer:
+#      group-id: 0
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-serializer: org.apache.kafka.common.serialization.StringDeserializer
+#      batch-size: 65536
+#      buffer-memory: 524288
   freemarker:
     template-loader-path: classpath:/static/template/
     suffix: .flt
@@ -58,7 +61,7 @@ spring:
     expose-session-attributes: false
     expose-spring-macro-helpers: false
     html:
-      path:  D://file// #静态页面
+      path: D://file//
 server:
   port: 8080
   servlet:

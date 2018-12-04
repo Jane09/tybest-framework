@@ -65,7 +65,7 @@ public class SeckillController extends AbstractBaseController {
 
 
     @ApiOperation(value="秒杀四(数据库悲观锁)")
-    @PostMapping("/startAopLock")
+    @PostMapping("/startPessLock")
     public Result startPessLock(long seckillId){
         return seckill(seckillId, (seckillService, seckillId1, userId) -> {
             Result result = seckillService.seckillDbOne(seckillId1, userId);
