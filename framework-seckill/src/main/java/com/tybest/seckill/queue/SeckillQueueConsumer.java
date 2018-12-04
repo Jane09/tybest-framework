@@ -1,6 +1,7 @@
 package com.tybest.seckill.queue;
 
 import com.tybest.seckill.entity.SuccessKilled;
+import com.tybest.seckill.model.Result;
 import com.tybest.seckill.service.SeckillService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,12 @@ public class SeckillQueueConsumer implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         while (true) {
             SuccessKilled killed =SeckillQueue.getInstance().consume();
-            seckillService.seckillSeq(killed.getSeckillId(),killed.getUserId());
+            Result result = seckillService.seckillSeq(killed.getSeckillId(),killed.getUserId());
+            if(result!=null){
+                log.info("用户:{}{}",killed.getUserId(),result.get("msg"));
+            }else{
+                log.info("用户:{}{}",killed.getUserId(),"哎呦喂，人也太多了，请稍后！");
+            }
         }
     }
 }

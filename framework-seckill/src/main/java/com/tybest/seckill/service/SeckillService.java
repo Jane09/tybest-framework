@@ -55,7 +55,8 @@ public class SeckillService {
     }
 
     /**
-     * 少卖很多
+     * 限流-少卖很多
+     * 不限流-超卖
      */
     @ServiceLimit
     @Transactional(rollbackOn = Throwable.class)
