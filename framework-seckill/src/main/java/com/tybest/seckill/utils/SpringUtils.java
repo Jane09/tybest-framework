@@ -1,21 +1,29 @@
 package com.tybest.seckill.utils;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * @author tb
  * @date 2018/12/3 11:36
  */
-public class SpringUtils {
+@Component
+public class SpringUtils implements ApplicationContextAware {
 
-    @Setter
     @Getter
     private static ApplicationContext applicationContext;
 
+    @Override
+    @ParametersAreNonnullByDefault
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        SpringUtils.applicationContext = applicationContext;
+    }
 
-    public static <T> T getBean(Class<T> clazz){
-        return getApplicationContext().getBean(clazz);
+    public static  <T> T getBean(Class<T> clazz){
+        return  getApplicationContext().getBean(clazz);
     }
 }

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -42,7 +43,7 @@ public class SeckillService {
     public long getSeckillCount(long seckillId) {
         String sql = "SELECT count(*) FROM success_killed WHERE seckill_id=?";
         Object result = dynamicNativeQuery.nativeQueryObject(sql,seckillId);
-        return (long)result;
+        return ((BigInteger)result).longValue();
     }
 
     @Transactional(rollbackOn = Throwable.class)
@@ -53,13 +54,18 @@ public class SeckillService {
         dynamicNativeQuery.nativeExecuteUpdate(sql,seckillId);
     }
 
+    /**
+     * 少卖很多
+     */
     @ServiceLimit
     @Transactional(rollbackOn = Throwable.class)
     public Result seckillOne(long seckillId, long userId) {
         return seckill(seckillId,userId);
     }
 
-//    @ServiceLimit
+    /**
+     * 多卖
+     */
     @Transactional(rollbackOn = Throwable.class)
     public Result seckillLock(long seckillId,long userId) {
         try{
@@ -70,12 +76,18 @@ public class SeckillService {
         }
     }
 
+    /**
+     * 正常
+     */
     @ServiceLock
     @Transactional(rollbackOn = Throwable.class)
     public Result seckillAopLock(long seckillId,long userId) {
         return seckill(seckillId,userId);
     }
 
+    /**
+     * 少卖
+     */
     @ServiceLimit
     @Transactional(rollbackOn = Throwable.class)
     public Result seckillDbOne(long seckillId, long userId) {
@@ -83,6 +95,9 @@ public class SeckillService {
         return seckill(sql,seckillId,userId);
     }
 
+    /**
+     * 1 件 = 正常
+     */
     @Transactional(rollbackOn = Throwable.class)
     public Result seckillDbTwo(long seckillId, long userId) {
         String sql = "UPDATE seckill  SET number=number-1 WHERE seckill_id=? AND number>0";
@@ -94,6 +109,9 @@ public class SeckillService {
         return Result.ok(StateEnum.SUCCESS);
     }
 
+    /**
+     * 正常
+     */
     @Transactional(rollbackOn = Throwable.class)
     public Result seckillOptLock(long seckillId,long userId,long number) {
         Seckill kill = findById(seckillId);
@@ -117,7 +135,7 @@ public class SeckillService {
 
     private Result seckill(String sql,long seckillId, long userId) {
         Object num = dynamicNativeQuery.nativeQueryObject(sql,seckillId);
-        long number = (long) num;
+        Integer number = (Integer) num;
         if(number <= 0){
             return Result.error(StateEnum.FINISH);
         }
