@@ -23,7 +23,7 @@ public class SeckillQueueConsumer implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         while (true) {
             SuccessKilled killed =SeckillQueue.getInstance().consume();
-            seckillService.seckillOne(killed.getSeckillId(),killed.getUserId());
+            seckillService.seckillSeq(killed.getSeckillId(),killed.getUserId());
         }
     }
 }

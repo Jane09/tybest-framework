@@ -63,6 +63,12 @@ public class SeckillService {
         return seckill(seckillId,userId);
     }
 
+
+    @Transactional(rollbackOn = Throwable.class)
+    public Result seckillSeq(long seckillId, long userId) {
+        return seckill(seckillId,userId);
+    }
+
     /**
      * 多卖
      */

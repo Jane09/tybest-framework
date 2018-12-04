@@ -15,6 +15,6 @@ public class SeckillEventConsumer implements EventHandler<SeckillEvent> {
 
     @Override
     public void onEvent(SeckillEvent event, long l, boolean b) {
-        seckillService.seckillOne(event.getSeckillId(),event.getUserId());
+        seckillService.seckillSeq(event.getSeckillId(),event.getUserId());
     }
 }

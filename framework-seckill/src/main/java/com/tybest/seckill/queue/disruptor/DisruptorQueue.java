@@ -38,6 +38,7 @@ public final class DisruptorQueue {
         if(!started) {
             start();
         }
+        log.info("disruptor enqueue={}",event.getUserId());
         RingBuffer<SeckillEvent> ringBuffer = disruptor.getRingBuffer();
         ringBuffer.publishEvent(TRANSLATOR_VARARG,event.getSeckillId(),event.getUserId());
     }
