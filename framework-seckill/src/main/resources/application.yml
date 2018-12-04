@@ -11,6 +11,16 @@ spring:
     username: root
     password: 123456
     driver-class-name: com.mysql.jdbc.Driver
+    hikari:
+      connection-timeout: 30000
+      auto-commit: true
+      max-lifetime: 1800000
+      pool-name: DatebookHikariCP
+      minimum-idle: 5
+      connection-test-query: SELECT 1
+      idle-timeout: 30000
+      maximum-pool-size: 15
+      connection-init-sql: "SET NAMES utf8mb4"
   jpa:
     database: mysql
     show-sql: true

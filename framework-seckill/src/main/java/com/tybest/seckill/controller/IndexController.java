@@ -3,6 +3,7 @@ package com.tybest.seckill.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author tb
@@ -11,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class IndexController {
 
-    @RequestMapping("{url}.shtml")
+    @RequestMapping(value = "{url}.shtml",method = RequestMethod.GET)
     public String page(@PathVariable("url") String url) {
         return  url;
     }
 
-    @RequestMapping("{module}/{url}.shtml")
+    @RequestMapping(value = "{module}/{url}.shtml",method = RequestMethod.GET)
     public String page(@PathVariable("module") String module,@PathVariable("url") String url) {
         return module + "/" + url;
     }

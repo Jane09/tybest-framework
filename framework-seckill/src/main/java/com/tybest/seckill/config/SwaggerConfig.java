@@ -19,10 +19,16 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 
+    private static final String BASE_PACKAGE = "com.tybest.seckill.controller";
+
     @Bean
     public Docket userApi() {
-        return new Docket(DocumentationType.SWAGGER_2).groupName("秒杀案例").apiInfo(apiInfo()).select()
-                .apis(RequestHandlerSelectors.basePackage("com.tybest.seckill.controller")).paths(PathSelectors.any()).build();
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("秒杀案例")
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
+                .paths(PathSelectors.any()).build();
     }
 
     /**
@@ -30,6 +36,6 @@ public class SwaggerConfig {
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder().title("秒杀案例接口文档").termsOfServiceUrl("https://tybest.com")
-                .contact(new Contact("科帮网 ", "https://www.tybest.com/", "331344988@qq.com")).version("1.1").build();
+                .contact(new Contact("TYBEST ", "https://www.tybest.com/", "331344988@qq.com")).version("1.1").build();
     }
 }
