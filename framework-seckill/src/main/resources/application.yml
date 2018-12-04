@@ -87,3 +87,5 @@ qq:
     AppSecretKey: 0OsIkPt******
 redisson:
   address: redis://127.0.0.1:6379
+seckill:
+  number: 1000
