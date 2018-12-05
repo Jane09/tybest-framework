@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
@@ -14,13 +15,15 @@ import java.util.concurrent.TimeUnit;
  * @date 2018/12/5 11:43
  */
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class RedisOperator {
 
-    private final RedisTemplate<Serializable, Serializable> redisTemplate;
+    @Resource
+    private RedisTemplate<Serializable, Serializable> redisTemplate;
 
     private static final String KEY_PREFIX_VALUE = "tybest:seckill:value:";
+
+    public static final String CHANNEL = "seckill";
 
 
     public boolean add(String k, Serializable v) {
@@ -43,7 +46,6 @@ public class RedisOperator {
         }catch (Throwable r) {
             log.error("缓存[{}]失败, value[{}]",key,v,r);
         }
-
         return false;
     }
 

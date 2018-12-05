@@ -2,6 +2,7 @@ package com.tybest.seckill.controller;
 
 import com.tybest.seckill.model.Result;
 import com.tybest.seckill.model.StateEnum;
+import com.tybest.seckill.queue.redis.RedisOperator;
 import com.tybest.seckill.service.SeckillService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -25,6 +26,10 @@ public abstract class AbstractBaseController {
 
     @Autowired
     protected SeckillService seckillService;
+
+    @Autowired
+    protected RedisOperator redisOperator;
+
     @Value("${seckill.number}")
     private int seckillNum;
 
@@ -46,6 +51,7 @@ public abstract class AbstractBaseController {
             log.error("线程{}被中断",Thread.currentThread().getName());
             return Result.error();
         }
+        redisOperator.add(seckillId+"",null);
         long count = seckillService.getSeckillCount(seckillId);
         log.info("共卖出 {} 件商品",count);
         return Result.ok();

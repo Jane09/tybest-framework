@@ -44,6 +44,7 @@ public class WebSocketServer {
         this.userId = userId;
         onlines.increment();
         sendMessage("连接成功");
+        log.info("用户={}上线",userId);
     }
 
     @OnClose
