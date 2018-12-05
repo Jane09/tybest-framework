@@ -138,6 +138,18 @@ public class SeckillService {
     }
 
 
+    @Transactional(rollbackOn = Throwable.class)
+    public Result seckilRedisLock(long seckillId,long userId) {
+        boolean res = false;
+        try{
+            lock.lock();
+            return seckill(seckillId,userId);
+        }finally {
+            lock.unlock();
+        }
+    }
+
+
 
 
     private Result seckill(String sql,long seckillId, long userId) {
