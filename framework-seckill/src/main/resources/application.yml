@@ -106,4 +106,4 @@ zk:
   host: 127.0.0.1
   port: 2181
 seckill:
-  number: 10000
+  number: 1000
