@@ -1,6 +1,5 @@
 package com.tybest.seckill.queue.redis;
 
-import com.tybest.seckill.exception.SeckillException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -52,7 +51,8 @@ public class RedisOperator {
     public boolean contains(String k) {
         final String key = KEY_PREFIX_VALUE+k;
         try{
-            return redisTemplate.hasKey(key);
+            Boolean b = redisTemplate.hasKey(key);
+            return b ==null?false:b;
         }catch (Throwable r) {
             log.error("判断缓存失败key[" + key + ", error[" + r + "]");
         }
@@ -74,7 +74,8 @@ public class RedisOperator {
     public boolean delete(String k) {
         final String key = KEY_PREFIX_VALUE+k;
         try{
-            return redisTemplate.delete(key);
+            Boolean d = redisTemplate.delete(key);
+            return d==null?false:d;
         }catch (Throwable r) {
             log.error("删除缓存失败key[" + key + ", error[" + r + "]");
         }
