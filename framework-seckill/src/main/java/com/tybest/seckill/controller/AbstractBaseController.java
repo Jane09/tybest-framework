@@ -18,10 +18,10 @@ import java.util.concurrent.*;
 public abstract class AbstractBaseController {
 
     private static int corePoolSize = Runtime.getRuntime().availableProcessors();
-    private static ThreadPoolExecutor executor  = new ThreadPoolExecutor(corePoolSize, corePoolSize+1, 10L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(10000),
+    private static ThreadPoolExecutor executor  = new ThreadPoolExecutor(corePoolSize, corePoolSize + 1, 10L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(1000),
             new BasicThreadFactory.Builder().namingPattern("seckill-task-%d").daemon(true).build(),
-            new ThreadPoolExecutor.AbortPolicy());
+            (r, executor) -> log.error("Greater than the max queue size, it will be rejected"));
 
     @Autowired
     protected SeckillService seckillService;
