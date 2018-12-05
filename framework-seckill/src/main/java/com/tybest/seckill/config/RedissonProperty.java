@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "redission")
+@ConfigurationProperties(prefix = "redisson")
 public class RedissonProperty {
 
     private int timeout = 3000;

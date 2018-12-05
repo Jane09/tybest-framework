@@ -4,6 +4,8 @@ import com.tybest.seckill.aop.ServiceLimit;
 import com.tybest.seckill.aop.ServiceLock;
 import com.tybest.seckill.entity.Seckill;
 import com.tybest.seckill.entity.SuccessKilled;
+import com.tybest.seckill.lock.redisson.RedissonLock;
+import com.tybest.seckill.lock.zk.ZkLock;
 import com.tybest.seckill.model.Result;
 import com.tybest.seckill.model.StateEnum;
 import com.tybest.seckill.repository.DynamicNativeQuery;
@@ -15,6 +17,7 @@ import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -139,17 +142,28 @@ public class SeckillService {
 
 
     @Transactional(rollbackOn = Throwable.class)
-    public Result seckilRedisLock(long seckillId,long userId) {
-        boolean res = false;
+    public Result seckilRedissonLock(long seckillId,long userId) {
         try{
-            lock.lock();
-            return seckill(seckillId,userId);
+            if(RedissonLock.tryLock(seckillId+"",3,20)){
+                return seckill(seckillId,userId);
+            }
+            return Result.error(StateEnum.FINISH);
         }finally {
-            lock.unlock();
+            RedissonLock.unlock(seckillId+"");
         }
     }
 
-
+    @Transactional(rollbackOn = Throwable.class)
+    public Result seckilZkLock(long seckillId,long userId) {
+        try{
+            if(ZkLock.lock(3, TimeUnit.SECONDS)){
+                return seckill(seckillId,userId);
+            }
+            return Result.error(StateEnum.FINISH);
+        }finally {
+            ZkLock.unlock();
+        }
+    }
 
 
     private Result seckill(String sql,long seckillId, long userId) {
