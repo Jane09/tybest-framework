@@ -1,5 +1,6 @@
 package com.tybest.seckill.config;
 
+import com.tybest.seckill.queue.redis.RedisConsumer;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
@@ -8,6 +9,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 
 
 /**
@@ -35,5 +39,19 @@ public class RedisConfig extends CachingConfigurerSupport {
             }
             return sb.toString();
         };
+    }
+
+
+    @Bean
+    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory, MessageListenerAdapter messageListenerAdapter) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(redisConnectionFactory);
+        container.addMessageListener(messageListenerAdapter,new PatternTopic("seckill"));
+        return container;
+    }
+
+    @Bean
+    public MessageListenerAdapter messageListenerAdapter(RedisConsumer redisConsumer){
+        return new MessageListenerAdapter(redisConsumer,"receiveMessage");
     }
 }
