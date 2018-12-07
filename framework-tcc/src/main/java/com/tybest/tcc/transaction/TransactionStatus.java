@@ -10,7 +10,7 @@ public enum TransactionStatus {
     CANCELLING(3);
 
     private int value;
-    
+
     public static TransactionStatus valueOf(int value) {
         switch (value) {
             case 1:
