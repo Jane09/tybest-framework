@@ -25,6 +25,7 @@
         <module>framework-gateway</module>
         <module>framework-micros</module>
         <module>framework-seckill</module>
+        <module>framework-tcc</module>
     </modules>
 
     <properties>
