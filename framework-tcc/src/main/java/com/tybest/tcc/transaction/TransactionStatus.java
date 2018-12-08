@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum TransactionStatus {
-
+    //
     TRYING(1),
+    //
     CONFIRMING(2),
+    //
     CANCELLING(3);
 
     private int value;
