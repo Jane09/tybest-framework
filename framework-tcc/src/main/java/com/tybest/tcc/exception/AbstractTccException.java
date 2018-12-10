@@ -13,4 +13,8 @@ public abstract class AbstractTccException extends RuntimeException {
     public AbstractTccException(Throwable cause) {
         super(cause);
     }
+
+    public AbstractTccException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
