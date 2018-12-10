@@ -10,7 +10,7 @@ public class DefaultTransactionContextEditor implements TransactionContextEditor
 
 
     @Override
-    public TransactionContext get(Object target, Method method, Object... args) {
+    public TransactionContext get(Object target, Method method, Object[] args) {
         int position = getPosition(method.getParameterTypes());
         if(position >= 0){
             return (TransactionContext) args[position];
@@ -19,7 +19,7 @@ public class DefaultTransactionContextEditor implements TransactionContextEditor
     }
 
     @Override
-    public void set(TransactionContext context, Object target, Method method, Object... args) {
+    public void set(TransactionContext context, Object target, Method method, Object[] args) {
         int position = getPosition(method.getParameterTypes());
         if(position >= 0){
             args[position] = context;

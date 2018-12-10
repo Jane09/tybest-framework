@@ -10,12 +10,12 @@ public class NullableTransactionContextEditor implements TransactionContextEdito
 
 
     @Override
-    public TransactionContext get(Object target, Method method, Object... args) {
+    public TransactionContext get(Object target, Method method, Object[] args) {
         return null;
     }
 
     @Override
-    public void set(TransactionContext context, Object target, Method method, Object... args) {
+    public void set(TransactionContext context, Object target, Method method, Object[] args) {
 
     }
 }

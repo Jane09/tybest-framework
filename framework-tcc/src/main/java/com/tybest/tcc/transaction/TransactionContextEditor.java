@@ -2,6 +2,9 @@ package com.tybest.tcc.transaction;
 
 import java.lang.reflect.Method;
 
+/**
+ * @author tb
+ */
 public interface TransactionContextEditor {
 
     /**
@@ -11,7 +14,7 @@ public interface TransactionContextEditor {
      * @param args
      * @return
      */
-    TransactionContext get(Object target, Method method, Object... args);
+    TransactionContext get(Object target, Method method, Object[] args);
 
     /**
      * 设置事务上下文
@@ -20,5 +23,5 @@ public interface TransactionContextEditor {
      * @param method
      * @param args
      */
-    void set(TransactionContext context,Object target, Method method, Object... args);
+    void set(TransactionContext context,Object target, Method method, Object[] args);
 }
