@@ -1,8 +1,6 @@
 package com.tybest.tcc.transaction;
 
 import com.tybest.tcc.utils.IdUtils;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.transaction.xa.Xid;
 import java.io.Serializable;
