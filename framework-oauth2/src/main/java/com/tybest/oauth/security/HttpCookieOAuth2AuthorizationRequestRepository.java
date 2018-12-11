@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2018/12/11 14:37
  */
 public class HttpCookieOAuth2AuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
+
+
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest httpServletRequest) {
         return null;
