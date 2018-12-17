@@ -27,7 +27,6 @@
         <module>framework-seckill</module>
         <module>framework-tcc</module>
         <module>framework-oauth2</module>
-        <module>framework-job</module>
     </modules>
 
     <properties>
