@@ -22,13 +22,13 @@ public interface ZkOperator {
      * @throws Exception
      */
     default boolean exists(CuratorFramework conn, String path, boolean watched) throws Exception {
-        Stat stat;
-        if(watched) {
-            stat = conn.checkExists().watched().forPath(path);
-        }else {
-            stat = conn.checkExists().forPath(path);
-        }
-        return null != stat;
+            Stat stat;
+            if(watched) {
+                stat = conn.checkExists().watched().forPath(path);
+            }else {
+                stat = conn.checkExists().forPath(path);
+            }
+            return null != stat;
     }
 
     /**
