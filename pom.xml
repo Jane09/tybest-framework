@@ -49,7 +49,7 @@
         <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
         <curator.version>4.0.1</curator.version>
         <fastjson.version>1.2.51</fastjson.version>
-        <zookeeper.version>3.4.13</zookeeper.version>
+        <zookeeper.version>3.4.14</zookeeper.version>
         <shardingsphere.version>3.0.0</shardingsphere.version>
     </properties>
 
