@@ -28,6 +28,7 @@
         <module>framework-tcc</module>
         <module>framework-oauth2</module>
         <module>framework-flink</module>
+        <module>framework-hbase</module>
     </modules>
 
     <properties>
